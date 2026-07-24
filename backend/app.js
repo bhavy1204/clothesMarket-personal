@@ -38,12 +38,12 @@ app.use(cors({
             callback(null, true);
         } else {
             console.log("Blocked by CORS:", origin);
-            callback(null, false);
+            callback(new Error("Not allowed by CORS"))
         }
     },
     credentials: true,
     methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
-    allowedHeaders: ['Content-Type', 'Authorization']
+    allowedHeaders: ['Content-Type', 'Authorization','X-City-Id']
 }))
 
 app.post(
