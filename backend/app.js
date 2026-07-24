@@ -69,7 +69,7 @@ app.use("/api/v1/seller", attachSelectedCity, sellerRouter);
 app.use("/api/v1/payment", paymentRouter);
 app.use("/api/v1/product", attachSelectedCity, productRouter);
 app.use("/api/v1/review", reviewRouter);
-app.use("/api/v1/siteContent", siteContentRouter);
+app.use("/api/v1/siteContent", attachSelectedCity, siteContentRouter);
 app.use("/api/v1/staff", staffRouter);
 
 app.use(errorMiddleware);

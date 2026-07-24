@@ -124,8 +124,18 @@ const updateBanner = asyncHandler(async (req, res) => {
 // public side for image sliders
 
 const getAllBanners = asyncHandler(async (req, res) => {
-    const banners = await HeroBanner.find({ status: "approved" })
-        .select("image title description redirectUrl order sellerId isSponsored")
+    const cityId = req.cityId;
+
+    const filter = {
+        status: "approved",
+        ...(cityId
+            ? { $or: [{ scope: "GLOBAL" }, { scope: "CITY", cityId }] }
+            : { scope: "GLOBAL" }),
+    };
+
+    const banners = await HeroBanner.find(filter)
+        .select("image title description redirectUrl order sellerId isSponsored cityId scope")
+        .populate("cityId", "name state")
         .populate("sellerId", "shopName slug")
         .sort({ order: 1 })
         .lean();

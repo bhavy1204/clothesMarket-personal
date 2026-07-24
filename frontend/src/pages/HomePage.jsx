@@ -13,6 +13,7 @@ import toast from "react-hot-toast";
 import { siteContentService, productService } from "@/api/index";
 import ProductGrid from "@/components/product/ProductGrid";
 import Button from "@/components/common/Button";
+import useCityStore from "@/store/useCityStore";
 
 /**
  * HomePage — /
@@ -42,13 +43,18 @@ export default function HomePage() {
 
 /* ── Banner slider ────────────────────────────────────────────────────── */
 
-const AUTOPLAY_INTERVAL_MS = 5000;
+const AUTOPLAY_INTERVAL_MS = 4000;
 
 function BannerSlider() {
   const [banners, setBanners] = useState([]);
   const [activeIndex, setActiveIndex] = useState(0);
   const [isLoading, setIsLoading] = useState(true);
   const timerRef = useRef(null);
+
+  const selectedCity = useCityStore((state) => state.selectedCity);
+  const cityId = selectedCity?._id;
+
+  console.log(cityId)
 
   useEffect(() => {
     let isCancelled = false;
@@ -66,7 +72,7 @@ function BannerSlider() {
     return () => {
       isCancelled = true;
     };
-  }, []);
+  },  [cityId]);
 
   const goTo = useCallback(
     (index) => {
@@ -98,10 +104,12 @@ function BannerSlider() {
   };
 
   if (isLoading) {
-    return (
-      <div className="w-full aspect-16/6 sm:aspect-16/4 bg-surface animate-pulse" />
-    );
-  }
+  return (
+    <div className="w-full px-4 sm:px-6 py-4 max-w-7xl mx-auto">
+      <div className="w-full aspect-16/5 rounded-2xl bg-surface animate-pulse" />
+    </div>
+  );
+}
 
   if (banners.length === 0) {
     // Fallback hero when no banners are configured yet
@@ -125,8 +133,9 @@ function BannerSlider() {
   }
 
   return (
+  <div className="w-full px-4 sm:px-6 py-4 max-w-7xl mx-auto">
     <div
-      className="relative w-full aspect-16/6 sm:aspect-16/4 overflow-hidden bg-surface"
+      className="relative w-full aspect-[16/5] overflow-hidden rounded-2xl bg-surface"
       onMouseEnter={() => clearInterval(timerRef.current)}
       onMouseLeave={resetAutoplay}
     >
@@ -175,7 +184,8 @@ function BannerSlider() {
         </>
       )}
     </div>
-  );
+  </div>
+);
 }
 
 function BannerSlide({ banner, isActive }) {
