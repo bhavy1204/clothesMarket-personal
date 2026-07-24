@@ -249,6 +249,10 @@ function FeaturedProducts() {
   const [products, setProducts] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
 
+  const selectedCity = useCityStore((state) => state.selectedCity);
+  const cityId = selectedCity?._id;
+
+
   useEffect(() => {
     let isCancelled = false;
     productService
@@ -265,12 +269,17 @@ function FeaturedProducts() {
     return () => {
       isCancelled = true;
     };
-  }, []);
+  }, [cityId]);
 
   return (
     <div className="flex flex-col gap-4">
       <div className="flex items-center justify-between">
+        <Link
+          to="/products"
+        >
         <h2 className="text-lg font-bold text-text">New arrivals</h2>
+
+        </Link>
         <Link
           to="/products"
           className="text-sm text-primary font-medium hover:underline inline-flex items-center gap-1"
@@ -314,32 +323,40 @@ function FAQPreview() {
       <h2 className="text-lg font-bold text-text">
         Frequently asked questions
       </h2>
-      <div className="rounded-md border border-border bg-surface-raised divide-y divide-border">
+      <div className="rounded-xl border border-border bg-surface-raised divide-y divide-border overflow-hidden">
         {faqs.map((faq) => {
           const isOpen = openId === faq._id;
           return (
-            <button
-              key={faq._id}
-              type="button"
-              onClick={() => setOpenId(isOpen ? null : faq._id)}
-              className="w-full text-left p-4 flex flex-col gap-2"
-            >
-              <div className="flex items-center justify-between gap-3">
-                <span className="text-sm font-medium text-text">
+            <div key={faq._id}>
+              <button
+                type="button"
+                onClick={() => setOpenId(isOpen ? null : faq._id)}
+                className="w-full text-left p-4 sm:p-5 flex items-center justify-between gap-3 hover:bg-surface transition-colors"
+              >
+                <span className="text-sm sm:text-base font-medium text-text">
                   {faq.question}
                 </span>
-                {isOpen ? (
-                  <Minus size={16} className="text-text-muted shrink-0" />
-                ) : (
-                  <Plus size={16} className="text-text-muted shrink-0" />
-                )}
+                <Plus
+                  size={18}
+                  className={`text-text-muted shrink-0 transition-transform duration-200 ${
+                    isOpen ? "rotate-45" : ""
+                  }`}
+                />
+              </button>
+              <div
+                className={`grid transition-all duration-200 ease-in-out ${
+                  isOpen
+                    ? "grid-rows-[1fr] opacity-100"
+                    : "grid-rows-[0fr] opacity-0"
+                }`}
+              >
+                <div className="overflow-hidden">
+                  <p className="text-sm text-text-secondary leading-relaxed px-4 sm:px-5 pb-4 sm:pb-5">
+                    {faq.answer}
+                  </p>
+                </div>
               </div>
-              {isOpen && (
-                <p className="text-sm text-text-secondary leading-relaxed">
-                  {faq.answer}
-                </p>
-              )}
-            </button>
+            </div>
           );
         })}
       </div>
