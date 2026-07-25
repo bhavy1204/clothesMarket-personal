@@ -28,7 +28,14 @@ import { VariantsField } from "@/components/product/VariantsField";
 import EmptyState from "@/components/common/EmptyState";
 import Pagination from "@/components/common/Pagination";
 
-import { DndContext, closestCenter } from "@dnd-kit/core";
+import {
+  DndContext,
+  closestCenter,
+  useSensor,
+  useSensors,
+  PointerSensor,
+  TouchSensor,
+} from "@dnd-kit/core";
 
 import {
   SortableContext,
@@ -40,44 +47,39 @@ import {
 import { CSS } from "@dnd-kit/utilities";
 
 function SortableImage({ image, onRemove }) {
-    const { attributes, listeners, setNodeRef, transform, transition } =
-      useSortable({ id: image.id });
+  const { attributes, listeners, setNodeRef, transform, transition } =
+    useSortable({ id: image.id });
 
-    const style = {
-      transform: CSS.Transform.toString(transform),
-      transition,
-    };
+  const style = {
+    transform: CSS.Transform.toString(transform),
+    transition,
+  };
 
-    return (
-  <div
-    ref={setNodeRef}
-    style={style}
-    className="relative group aspect-square overflow-hidden rounded-lg border border-border"
-  >
-    <img
-      src={image.preview}
-      alt=""
-      className="w-full h-full object-cover"
-    />
-
+  return (
     <div
-      {...attributes}
-      {...listeners}
-      className="absolute inset-0 cursor-grab active:cursor-grabbing"
-    />
-
-    <button
-      type="button"
-      onClick={() => onRemove(image.id)}
-      className="absolute top-2 right-2 z-10 h-7 w-7 rounded-full bg-red-500 text-white opacity-0 group-hover:opacity-100 transition"
+      ref={setNodeRef}
+      style={style}
+      className="relative group aspect-square overflow-hidden rounded-lg border border-border"
     >
-      ×
-    </button>
-  </div>
-);
-  }
+      <img src={image.preview} alt="" className="w-full h-full object-cover" />
 
-  
+      <div
+        {...attributes}
+        {...listeners}
+        style={{ touchAction: "none" }}
+        className="absolute inset-0 cursor-grab active:cursor-grabbing"
+      />
+
+      <button
+        type="button"
+        onClick={() => onRemove(image.id)}
+        className="absolute top-2 right-2 z-10 h-7 w-7 rounded-full bg-red-500 text-white opacity-100 sm:opacity-0 sm:group-hover:opacity-100 transition"
+      >
+        ×
+      </button>
+    </div>
+  );
+}
 
 export default function SellerProductsPage() {
   const {
@@ -322,6 +324,15 @@ function ProductFormModal({ isOpen, onClose, product, onSaved }) {
     };
   }, [images]);
 
+  const sensors = useSensors(
+    useSensor(PointerSensor, {
+      activationConstraint: { distance: 8 }, // avoids accidental drags on click
+    }),
+    useSensor(TouchSensor, {
+      activationConstraint: { delay: 150, tolerance: 5 }, // small hold before drag starts, so normal taps/scroll still work
+    }),
+  );
+
   const handleImageChange = (e) => {
     const files = Array.from(e.target.files);
 
@@ -358,8 +369,6 @@ function ProductFormModal({ isOpen, onClose, product, onSaved }) {
       return arrayMove(items, oldIndex, newIndex);
     });
   };
-
-  
 
   const onSubmit = async (data) => {
     // New products need images; edits (via update, which takes JSON per
@@ -506,6 +515,7 @@ function ProductFormModal({ isOpen, onClose, product, onSaved }) {
 
         {images.length > 0 && (
           <DndContext
+            sensors={sensors}
             collisionDetection={closestCenter}
             onDragEnd={handleDragEnd}
           >
