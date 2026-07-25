@@ -2,7 +2,7 @@ import multer from "multer"
 import { APIError } from "../utils/apiError.js"
 
 const ALLOWED_MIME_TYPES = ["image/jpeg", "image/png", "image/webp"]
-const MAX_FILE_SIZE = 5 * 1024 * 1024 //5mb
+const MAX_FILE_SIZE = 10 * 1024 * 1024 //5mb
 
 // memoryStorage keeps file in buffer — Sharp processes it in the controller, before uploading to Backblaze B2
 

@@ -1,6 +1,7 @@
 import { useEffect, useState, useCallback } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { useFieldArray, useFormContext } from "react-hook-form";
 import {
   Plus,
   PencilSimple,
@@ -23,6 +24,7 @@ import Button from "@/components/common/Button";
 import Input from "@/components/common/Input";
 import Modal from "@/components/common/Modal";
 import Loader from "@/components/common/Loader";
+import { VariantsField } from "@/components/product/VariantsField";
 import EmptyState from "@/components/common/EmptyState";
 import Pagination from "@/components/common/Pagination";
 
@@ -36,6 +38,46 @@ import {
 } from "@dnd-kit/sortable";
 
 import { CSS } from "@dnd-kit/utilities";
+
+function SortableImage({ image, onRemove }) {
+    const { attributes, listeners, setNodeRef, transform, transition } =
+      useSortable({ id: image.id });
+
+    const style = {
+      transform: CSS.Transform.toString(transform),
+      transition,
+    };
+
+    return (
+  <div
+    ref={setNodeRef}
+    style={style}
+    className="relative group aspect-square overflow-hidden rounded-lg border border-border"
+  >
+    <img
+      src={image.preview}
+      alt=""
+      className="w-full h-full object-cover"
+    />
+
+    <div
+      {...attributes}
+      {...listeners}
+      className="absolute inset-0 cursor-grab active:cursor-grabbing"
+    />
+
+    <button
+      type="button"
+      onClick={() => onRemove(image.id)}
+      className="absolute top-2 right-2 z-10 h-7 w-7 rounded-full bg-red-500 text-white opacity-0 group-hover:opacity-100 transition"
+    >
+      ×
+    </button>
+  </div>
+);
+  }
+
+  
 
 export default function SellerProductsPage() {
   const {
@@ -260,6 +302,7 @@ function ProductFormModal({ isOpen, onClose, product, onSaved }) {
   const {
     register,
     handleSubmit,
+    control,
     reset,
     formState: { errors },
   } = useForm({
@@ -316,48 +359,12 @@ function ProductFormModal({ isOpen, onClose, product, onSaved }) {
     });
   };
 
-  function SortableImage({ image, onRemove }) {
-    const { attributes, listeners, setNodeRef, transform, transition } =
-      useSortable({ id: image.id });
-
-    const style = {
-      transform: CSS.Transform.toString(transform),
-      transition,
-    };
-
-    return (
-      <div
-        ref={setNodeRef}
-        style={style}
-        className="relative group aspect-square overflow-hidden rounded-lg border border-border"
-      >
-        <img
-          src={image.preview}
-          alt=""
-          className="w-full h-full object-cover"
-        />
-
-        <button
-          type="button"
-          onClick={() => onRemove(image.id)}
-          className="absolute top-2 right-2 h-7 w-7 rounded-full bg-red-500 text-white opacity-0 group-hover:opacity-100 transition"
-        >
-          ×
-        </button>
-
-        <div
-          {...attributes}
-          {...listeners}
-          className="absolute inset-0 cursor-grab active:cursor-grabbing"
-        />
-      </div>
-    );
-  }
+  
 
   const onSubmit = async (data) => {
     // New products need images; edits (via update, which takes JSON per
     // your service definition) don't touch images here.
-    if (!isEditing && imageFiles.length === 0) {
+    if (!isEditing && images.length === 0) {
       toast.error("Please add at least one product image");
       return;
     }
@@ -458,19 +465,7 @@ function ProductFormModal({ isOpen, onClose, product, onSaved }) {
           />
         </div>
 
-        <div className="grid grid-cols-2 gap-3">
-          <Input
-            label="Size"
-            error={errors.variants?.[0]?.size?.message}
-            {...register("variants.0.size")}
-          />
-          <Input
-            label="Quantity"
-            type="number"
-            error={errors.variants?.[0]?.quantity?.message}
-            {...register("variants.0.quantity")}
-          />
-        </div>
+        <VariantsField control={control} register={register} errors={errors} />
 
         <div>
           <label className="text-sm font-medium text-text block mb-1.5">

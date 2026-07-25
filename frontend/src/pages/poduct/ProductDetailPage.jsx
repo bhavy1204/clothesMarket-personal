@@ -169,7 +169,7 @@ export default function ProductDetailPage() {
     variants,
   } = product;
   const seller = product.sellerId;
-  const hasDiscount = discountedPrice && discountedPrice < price;
+  const hasDiscount = Boolean(discountedPrice) && discountedPrice < price;
 
   return (
     <div className="mx-auto max-w-6xl px-6 sm:px-8 lg:px-10 py-12 lg:py-16">

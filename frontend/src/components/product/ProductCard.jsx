@@ -9,17 +9,15 @@ import { formatPrice, formatDiscount } from "@/lib/formatters";
  * Expects product shape from productService (getAll/search/getSellerProducts):
  *   { _id, slug, name, images[], price, discountedPrice, sellerName? }
  */
-export default function ProductCard({ product, onToggleWishlist, isWishlisted = false }) {
-  const {
-    slug,
-    productName,
-    images,
-    price,
-    discountedPrice,
-    averageRating,
-  } = product;
+export default function ProductCard({
+  product,
+  onToggleWishlist,
+  isWishlisted = false,
+}) {
+  const { slug, productName, images, price, discountedPrice, averageRating } =
+    product;
 
-  const hasDiscount = discountedPrice && discountedPrice < price;
+  const hasDiscount = Boolean(discountedPrice) && discountedPrice < price;
   const thumbnail = images?.[0];
 
   return (
@@ -75,7 +73,13 @@ export default function ProductCard({ product, onToggleWishlist, isWishlisted = 
 
           <div className="flex items-center justify-between gap-2">
             <div className="flex items-baseline gap-1.5 min-w-0">
-              <span className="text-sm sm:text-base font-semibold text-white bg-success rounded-md px-1.5 py-0.5">
+              <span
+                className={
+                  hasDiscount
+                    ? "text-sm sm:text-base font-semibold text-white bg-success rounded-md px-1.5 py-0.5"
+                    : "text-sm sm:text-base font-semibold text-text"
+                }
+              >
                 {formatPrice(hasDiscount ? discountedPrice : price)}
               </span>
               {hasDiscount && (
@@ -97,4 +101,3 @@ export default function ProductCard({ product, onToggleWishlist, isWishlisted = 
     </div>
   );
 }
-

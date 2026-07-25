@@ -43,7 +43,7 @@ export default function ShopHeader({
 
   return (
     <div className="relative">
-      <div className="relative h-40 sm:h-56 w-full bg-surface overflow-hidden">
+      <div className="relative w-full aspect-[500/166] bg-surface overflow-hidden">
         {banner ? (
           <img src={banner} alt="" className="h-full w-full object-cover" />
         ) : (
@@ -58,7 +58,7 @@ export default function ShopHeader({
           />
         )}
 
-        {isOwner && onAddProduct && (
+        {/* {isOwner && onAddProduct && (
           <button
             type="button"
             onClick={onAddProduct}
@@ -66,7 +66,7 @@ export default function ShopHeader({
           >
             <Plus size={16} weight="bold" /> Add product
           </button>
-        )}
+        )} */}
       </div>
 
       <div className="px-4 sm:px-6">

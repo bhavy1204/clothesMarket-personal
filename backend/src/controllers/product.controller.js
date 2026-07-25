@@ -89,6 +89,7 @@ const createProduct = asyncHandler(async (req, res) => {
     // create with placeholder slug first to get _id
     const product = await Product.create({
         sellerId: req.user._id,
+        cityId:req.user.cityId,
         productName,
         productDescription,
         price,
