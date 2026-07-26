@@ -14,6 +14,7 @@ export const errorMiddleware = (err, req, res, next) => {
     }
 
     if (err instanceof mongoose.Error.ValidationError) {
+        console.log("\nAND THHIS IS ERROR",err)
         const errors = Object.values(err.errors).map((e) => ({
             field: e.path,
             message: e.message

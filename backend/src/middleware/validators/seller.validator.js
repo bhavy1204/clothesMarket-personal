@@ -56,7 +56,7 @@ export const validateSellerRegister = [
         .matches(PHONE_REGEX).withMessage("Invalid Indian WhatsApp number"),
 
     body("altPhone")
-        .optional()
+        .optional({ values: "falsy" })
         .trim()
         .matches(PHONE_REGEX).withMessage("Invalid Indian alternate phone number"),
 
