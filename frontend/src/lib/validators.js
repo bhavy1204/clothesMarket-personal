@@ -9,10 +9,13 @@ const phoneSchema = z.string().regex(/^[6-9]\d{9}$/, "Enter a valid 10-digit Ind
 
 const otpSchema = z.string().length(6, "OTP must be 6 digits").regex(/^\d+$/, "OTP must be numeric");
 
-const optionalString = z.preprocess(
-    (value) => value === "" ? undefined : value,
-    z.string().trim().optional()
-);
+const optionalString = z.preprocess((value) => {
+    if (typeof value !== "string") return value;
+
+    const trimmed = value.trim();
+
+    return trimmed === "" ? undefined : trimmed;
+}, z.string().optional());
 
 export const userRegisterSchema = z.object({
     fullName: z.string().trim().min(2, "Name is too short").max(60),

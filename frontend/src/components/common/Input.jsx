@@ -17,6 +17,7 @@ const Input = forwardRef(function Input({
     required = false,
     className = "",
     id,
+    autoComplete,
     ...props
   },ref,) {
     
@@ -53,6 +54,7 @@ const Input = forwardRef(function Input({
         )}
 
         <input
+          autoComplete={autoComplete ?? "off"}
           ref={ref}
           id={inputId}
           type={resolvedType}

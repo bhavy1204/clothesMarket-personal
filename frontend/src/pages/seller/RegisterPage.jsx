@@ -49,7 +49,11 @@ export default function SellerRegisterPage() {
     formState: { errors },
   } = useForm({
     resolver: zodResolver(sellerRegisterSchema),
-    defaultValues: { cityId: "" },
+    mode: "all",
+    reValidateMode: "onChange",
+    defaultValues: {
+      cityId: "",
+    },
   });
 
   useEffect(() => {
@@ -84,9 +88,11 @@ export default function SellerRegisterPage() {
     setIsSubmitting(true);
     try {
       const formData = new FormData();
-      Object.entries(data).forEach(([key, value]) =>
-        formData.append(key, value),
-      );
+      Object.entries(data).forEach(([key, value]) => {
+        if (value !== undefined && value !== null) {
+          formData.append(key, value);
+        }
+      });
 
       // GeoJSON is [lng, lat] — flipped from the hook's {lat, lng}
       formData.append(
@@ -107,9 +113,12 @@ export default function SellerRegisterPage() {
         replace: true,
       });
     } catch (err) {
+      console.log(err);
+      console.log(err.response);
+      console.log(err.response?.data);
+
       toast.error(
-        err?.response?.data?.message ||
-          "Couldn't register your shop. Please try again.",
+        err?.response?.data?.message ?? err?.message ?? "Unknown error",
       );
     } finally {
       setIsSubmitting(false);
@@ -126,7 +135,15 @@ export default function SellerRegisterPage() {
           </p>
         </div>
 
-        <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-4">
+        <form
+          onSubmit={handleSubmit(onSubmit, (errors) => {
+            console.log("FORM INVALID");
+            console.log(errors);
+
+            toast.error(JSON.stringify(errors, null, 2));
+          })}
+          className="flex flex-col gap-4"
+        >
           <Input
             label="Shop name"
             leftIcon={<Storefront size={16} />}
@@ -257,9 +274,7 @@ export default function SellerRegisterPage() {
               ))}
             </select>
             {errors.cityId && (
-              <p className="text-xs text-error mt-1">
-                {errors.cityId.message}
-              </p>
+              <p className="text-xs text-error mt-1">{errors.cityId.message}</p>
             )}
           </div>
 
