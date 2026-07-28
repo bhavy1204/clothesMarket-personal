@@ -51,6 +51,7 @@ export default function CityManagement() {
   const handleToggleStatus = async (city) => {
     setActioningId(city._id);
     try {
+      console.log(city)
       await adminService.toggleCityStatus(city._id);
       toast.success(
         `${city.name} ${city.isActive ? "deactivated" : "activated"}`,

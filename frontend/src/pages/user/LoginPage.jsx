@@ -104,7 +104,7 @@ export default function LoginPage() {
         <div className="text-center mb-6">
           <h1 className="text-xl font-bold text-text">Welcome back</h1>
           <p className="text-sm text-text-muted mt-1">
-            Log in to continue to ClothMarket
+            Log in to continue to ClothesMarket
           </p>
         </div>
 
@@ -210,6 +210,15 @@ export default function LoginPage() {
             </Link>
           </p>
         )}
+
+        <p className="text-center text-sm text-text-muted mt-6">
+          <Link
+            to="/"
+            className="text-primary font-medium hover:underline"
+          >
+            Skip to Home
+          </Link>
+        </p>
       </div>
     </div>
   );

@@ -68,7 +68,7 @@ export default function AdminSidebar() {
         {/* Footer */}
 
         <div className="mt-auto rounded-xl border border-border bg-surface-raised p-4">
-          <p className="text-sm font-medium text-text">ClothMarket Admin</p>
+          <p className="text-sm font-medium text-text">ClothesMarket Admin</p>
 
           <p className="mt-1 text-xs text-text-muted">
             Manage sellers, users and marketplace content.

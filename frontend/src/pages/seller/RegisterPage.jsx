@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useMemo } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Link, useNavigate } from "react-router-dom";
@@ -9,6 +9,7 @@ import {
   Phone,
   MapPin,
   User,
+  MapPinArea,
   Image as ImageIcon,
 } from "@phosphor-icons/react";
 import toast from "react-hot-toast";
@@ -44,6 +45,8 @@ export default function SellerRegisterPage() {
   const [isLoadingCities, setIsLoadingCities] = useState(true);
 
   const {
+    watch,
+    setValue,
     register,
     handleSubmit,
     formState: { errors },
@@ -125,13 +128,25 @@ export default function SellerRegisterPage() {
     }
   };
 
+  const sameAsPhone = watch("sameAsPhone");
+  const phone = watch("phone");
+
+  useEffect(() => {
+    if (sameAsPhone) {
+      setValue("whatsappNumber", phone, {
+        shouldValidate: true,
+        shouldDirty: true,
+      });
+    }
+  }, [phone, sameAsPhone, setValue]);
+
   return (
     <div className="min-h-[calc(100vh-4rem)] flex items-center justify-center px-4 py-10 bg-bg">
       <div className="w-full max-w-md">
         <div className="text-center mb-6">
           <h1 className="text-xl font-bold text-text">Register your shop</h1>
           <p className="text-sm text-text-muted mt-1">
-            List your shop on ClothMarket for ₹500/month
+            List your shop on ClothesMarket
           </p>
         </div>
 
@@ -143,6 +158,7 @@ export default function SellerRegisterPage() {
             toast.error(JSON.stringify(errors, null, 2));
           })}
           className="flex flex-col gap-4"
+          autoComplete="off"
         >
           <Input
             label="Shop name"
@@ -174,21 +190,37 @@ export default function SellerRegisterPage() {
           />
 
           <Input
-            label="Phone number"
-            type="tel"
-            leftIcon={<Phone size={16} />}
-            error={errors.phone?.message}
-            {...register("phone")}
-          />
+  label="Phone number"
+  type="tel"
+  leftIcon={<Phone size={16} />}
+  error={errors.phone?.message}
+  {...register("phone")}
+/>
 
-          <Input
-            label="WhatsApp number"
-            type="tel"
-            helperText="Customers will contact you here"
-            leftIcon={<Phone size={16} />}
-            error={errors.whatsappNumber?.message}
-            {...register("whatsappNumber")}
-          />
+<div className="flex items-center gap-2">
+  <input
+    id="sameAsPhone"
+    type="checkbox"
+    className="h-4 w-4 rounded border-gray-300 text-primary focus:ring-primary"
+    {...register("sameAsPhone")}
+  />
+  <label
+    htmlFor="sameAsPhone"
+    className="text-sm text-text-muted cursor-pointer"
+  >
+    Same as phone number
+  </label>
+</div>
+
+<Input
+  label="WhatsApp number"
+  type="tel"
+  helperText="Customers will contact you here"
+  leftIcon={<Phone size={16} />}
+  disabled={sameAsPhone}
+  error={errors.whatsappNumber?.message}
+  {...register("whatsappNumber")}
+/>
 
           <Input
             label="Alternate phone (optional)"
@@ -280,6 +312,7 @@ export default function SellerRegisterPage() {
 
           <Input
             label="Postal code"
+            leftIcon={<MapPinArea size={16} />}
             inputMode="numeric"
             maxLength={6}
             error={errors.postalCode?.message}
@@ -308,12 +341,8 @@ export default function SellerRegisterPage() {
               icon={<ImageIcon size={16} />}
               file={avatarFile}
               onChange={(e) => handleFileChange(e, setAvatarFile)}
-            />
-            <FileField
-              label="Shop banner"
-              icon={<ImageIcon size={16} />}
-              file={bannerFile}
-              onChange={(e) => handleFileChange(e, setBannerFile)}
+              onRemove={() => setAvatarFile(null)}
+              previewShape="circle"
             />
           </div>
 
@@ -346,6 +375,7 @@ export default function SellerRegisterPage() {
 
           <Input
             label="Google Map Link"
+            leftIcon={<MapPin size={16} />}
             helperText="Used for seller's google map address"
             error={errors.googleMapLink?.message}
             {...register("googleMapLink")}
@@ -375,22 +405,68 @@ export default function SellerRegisterPage() {
   );
 }
 
-function FileField({ label, icon, file, onChange }) {
+function FileField({
+  label,
+  icon,
+  file,
+  onChange,
+  onRemove,
+  previewShape = "square",
+}) {
+  const preview = useMemo(
+    () => (file ? URL.createObjectURL(file) : null),
+    [file],
+  );
+
+  useEffect(() => {
+    return () => {
+      if (preview) URL.revokeObjectURL(preview);
+    };
+  }, [preview]);
+
   return (
-    <label className="flex flex-col gap-1.5 cursor-pointer">
-      <span className="text-sm font-medium text-text">{label}</span>
-      <div className="h-11 rounded-md border border-dashed border-border-strong bg-surface flex items-center gap-2 px-3 text-text-muted hover:border-primary hover:text-primary transition-colors">
-        {icon}
-        <span className="text-xs truncate">
-          {file ? file.name : "Choose image"}
-        </span>
-      </div>
-      <input
-        type="file"
-        accept="image/jpeg,image/png,image/webp"
-        className="hidden"
-        onChange={onChange}
-      />
-    </label>
+    <div className="flex flex-col items-center space-y-3">
+      <label className="text-sm font-medium">{label}</label>
+
+      {!file ? (
+        <label
+          className={`flex cursor-pointer flex-col items-center justify-center border-2 border-dashed border-gray-300 hover:border-primary ${
+            previewShape === "circle"
+              ? "h-40 w-40 rounded-full"
+              : "h-36 w-full rounded-xl"
+          }`}
+        >
+          {icon}
+          <span className="mt-2 text-sm">Choose image</span>
+
+          <input
+            type="file"
+            accept="image/*"
+            className="hidden"
+            onChange={onChange}
+          />
+        </label>
+      ) : (
+        <div className="relative">
+          <img
+            src={preview}
+            alt={label}
+            className={`object-cover border-2 border-gray-200 ${
+              previewShape === "circle"
+                ? "h-40 w-40 rounded-full"
+                : "h-40 w-full rounded-xl"
+            }`}
+          />
+
+          <button
+            type="button"
+            onClick={onRemove}
+            className="absolute -right-1 -top-1 flex h-8 w-8 items-center justify-center rounded-full bg-red-500 text-white shadow-md transition hover:scale-105 hover:bg-red-600"
+          >
+            ✕
+          </button>
+        </div>
+      )}
+    </div>
   );
 }

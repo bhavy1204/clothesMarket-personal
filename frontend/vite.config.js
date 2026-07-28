@@ -15,8 +15,8 @@ export default defineConfig(({ mode }) => {
         registerType: "autoUpdate",
         includeAssets: [ "favicon.ico", "robots.txt", "apple-touch-icon.png"],
         manifest: {
-          name: "ClothMarket",
-          short_name: "ClothMarket",
+          name: "ClothesMarket",
+          short_name: "ClothesMarket",
           description: "Discover local clothing shops near you.",
           theme_color: "#ffffff",
           background_color: "#ffffff",

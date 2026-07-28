@@ -128,7 +128,6 @@ export default function SellerProductsPage() {
   };
 
   const openEditModal = (product) => {
-    console.log(product);
     setEditingProduct(product);
     setIsModalOpen(true);
   };

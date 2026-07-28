@@ -54,7 +54,6 @@ const buildSortOption = (sort) => {
 // ─── CREATE PRODUCT ───────────────────────────────────────────────────────────
 
 const createProduct = asyncHandler(async (req, res) => {
-    console.log("SELLER EACHED HERE");
     const seller = await Seller.findById(req.user._id).select("subscription status");
 
     if (seller.status === "suspended" || seller.status === "pending") {

@@ -3,7 +3,6 @@ import { APIError } from "../utils/apiError.js";
 import { Staff } from "../models/staff.model.js";
 
 export const verifyCityAdmin = asyncHandler(async (req, res, next) => {
-    console.log("VErifying from city admin >> ", req.staff)
     const id = req.staff?._id;
 
     const staff = await Staff.findById(id).select("role status cityId");
@@ -22,7 +21,6 @@ export const verifyCityAdmin = asyncHandler(async (req, res, next) => {
 
     req.staff = staff;
 
-    console.log("Reacehed at end of cityAdmin middleware")
 
     next();
 });

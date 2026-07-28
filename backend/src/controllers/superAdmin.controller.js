@@ -6,19 +6,20 @@ import { Seller } from "../models/seller.model.js";
 import { Product } from "../models/product.model.js"
 
 const getAllSellers = asyncHandler(async (req, res) => {
-    const cityId = req.cityId;
+
 
     const page = Math.max(1, parseInt(req.query.page) || 1);
     const limit = Math.min(50, Math.max(1, parseInt(req.query.limit) || 10));
     const skip = (page - 1) * limit;
 
     const [sellers, total] = await Promise.all([
-        Seller.find({cityId})
+        Seller.find()
             .select("-password -refreshToken -authId")
             .skip(skip)
             .limit(limit)
             .lean(),
-        Seller.countDocuments({cityId})
+
+        Seller.countDocuments(),
     ]);
 
     return res.status(200).json(
@@ -71,7 +72,6 @@ const approveSeller = asyncHandler(async (req, res) => {
 })
 
 const suspendSeller = asyncHandler(async (req, res) => {
-    console.log("SUSPEND REQ");
     const seller = await Seller.findById(req.params.id).select("-password -refreshToken -authId");
 
     if (!seller) {
@@ -91,7 +91,6 @@ const suspendSeller = asyncHandler(async (req, res) => {
 });
 
 const getAllUsers = asyncHandler(async (req, res) => {
-    console.log("USER REACHED HERE")
     const page = Math.max(1, parseInt(req.query.page) || 1);
     const limit = Math.min(50, Math.max(1, parseInt(req.query.limit) || 10));
     const skip = (page - 1) * limit;

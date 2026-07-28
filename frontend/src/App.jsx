@@ -73,7 +73,6 @@ export default function App() {
   const isLoading = useAuthStore((s) => s.isLoading);
 
   useEffect(() => {
-    console.log("check auth checking");
     checkAuth();
   }, []);
 

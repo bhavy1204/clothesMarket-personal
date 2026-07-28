@@ -4,7 +4,6 @@ import { APIError } from "../utils/apiError.js";
 import { asyncHandler } from "../utils/asyncHandler.js";
 
 export const verifyStaffJWT = asyncHandler(async (req, res, next) => {
-    console.log("verifying staff");
 
     const token = req.cookies?.accessToken || req.headers?.authorization?.replace("Bearer ", "");
 
@@ -34,8 +33,6 @@ export const verifyStaffJWT = asyncHandler(async (req, res, next) => {
     if (!staff) {
         throw new APIError(401, "Staff not found or token is invalid");
     }
-
-    console.log("verification done")
 
     req.staff = staff;
     req.userType = "staff";

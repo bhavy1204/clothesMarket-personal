@@ -345,7 +345,6 @@ function ChangePasswordSection() {
   } = useForm({ resolver: zodResolver(changePasswordSchema) });
 
   const onSubmit = async (data) => {
-    console.log(data)
     setIsSubmitting(true);
     try {
       await userService.changePassword(data);

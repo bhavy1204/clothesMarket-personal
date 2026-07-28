@@ -13,7 +13,7 @@ export default function Footer() {
     <footer className="bg-surface border-t border-border mt-16">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 py-8 sm:py-10 grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-6 sm:gap-8">
         <div className="col-span-2 sm:col-span-3 lg:col-span-1">
-          <p className="text-lg font-bold text-primary mb-2">clothMarkets</p>
+          <p className="text-lg font-bold text-primary mb-2">ClothesMarket</p>
           <p className="text-sm text-text-muted leading-relaxed">
             Discover local clothing shops near you and enquire directly on
             WhatsApp.
@@ -33,6 +33,7 @@ export default function Footer() {
           links={[
             { to: "/seller/register", label: "Register your shop" },
             { to: "/login", label: "Seller login" },
+            { to: "/staff/login", label: "Staff login" },
           ]}
         />
 
@@ -49,14 +50,14 @@ export default function Footer() {
           <p className="text-sm font-semibold text-text mb-3">Get in touch</p>
           <div className="flex items-center gap-3">
             <a
-              href="mailto:support@clothmarkets.in"
+              href="mailto:cosmanianhanshul722@gmail.com"
               aria-label="Email"
               className="text-text-muted hover:text-primary"
             >
               <EnvelopeSimple size={20} />
             </a>
             <a
-              href="https://wa.me/910000000000"
+              href="https://wa.me/+919358427623"
               target="_blank"
               rel="noopener noreferrer"
               aria-label="WhatsApp"
@@ -65,7 +66,7 @@ export default function Footer() {
               <WhatsappLogo size={20} />
             </a>
             <a
-              href="https://instagram.com"
+              href="https://instagram.com/clothesmarket38"
               target="_blank"
               rel="noopener noreferrer"
               aria-label="Instagram"
@@ -79,7 +80,7 @@ export default function Footer() {
 
       <div className="border-t border-border py-4 px-4 sm:px-6">
         <p className="text-xs text-text-muted text-center">
-          © {year} clothMarket. All rights reserved.
+          © {year} clothesMarket. All rights reserved.
         </p>
       </div>
     </footer>

@@ -69,12 +69,12 @@ export default function Navbar() {
          <Link to="/" className="flex items-center gap-2 shrink-0">
            <img
              src={logo}
-             alt="ClothMarket"
+             alt="ClothesMarket"
              className="h-12 w-12 rounded-full object-cover scale-110 ring-2 ring-primary/20 shadow-md transition-all duration-200 hover:scale-115 hover:ring-primary/40"
            />
 
            <span className="hidden sm:inline text-lg font-bold text-primary tracking-tight">
-             ClothMarket
+             ClothesMarket
            </span>
          </Link>
 

@@ -3,7 +3,15 @@ import { z } from "zod";
 
 const emailSchema = z.string().trim().toLowerCase().email("Enter a valid email");
 
-const passwordSchema = z.string().min(8, "Password must be at least 8 characters").regex(/[A-Z]/, "Must contain at least one uppercase letter").regex(/[0-9]/, "Must contain at least one number");
+const passwordSchema = z.string()
+    .min(8, "Password must be at least 8 characters long")
+    .regex(/[A-Z]/, "Password must contain at least one uppercase letter")
+    .regex(/[a-z]/, "Password must contain at least one lowercase letter")
+    .regex(/[0-9]/, "Password must contain at least one number")
+    .regex(
+        /[!@#$%^&*(),.?":{}|<>_\-+=\[\]\\\/~`';]/,
+        "Password must contain at least one special character"
+    );
 
 const phoneSchema = z.string().regex(/^[6-9]\d{9}$/, "Enter a valid 10-digit Indian phone number");
 

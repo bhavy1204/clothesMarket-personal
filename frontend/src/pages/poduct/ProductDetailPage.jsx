@@ -131,7 +131,7 @@ export default function ProductDetailPage() {
       toast.error("This seller hasn't listed a contact number");
       return;
     }
-    const message = `Hi, I'm interested in "${product.name}" (${formatPrice(product.discountedPrice || product.price)}) on CLothMarket.`;
+    const message = `Hi, I'm interested in "${product.name}" (${formatPrice(product.discountedPrice || product.price)}) on CLothesMarket.`;
     window.open(
       buildWhatsAppLink(phone, message),
       "_blank",

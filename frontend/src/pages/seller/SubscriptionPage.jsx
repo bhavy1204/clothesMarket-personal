@@ -73,7 +73,7 @@ export default function SellerSubscriptionPage() {
       const razorpay = new window.Razorpay({
         key: order.data.razorpayKeyId,
         subscription_id: order.data.subscriptionId,
-        name: "ClothMarket",
+        name: "ClothesMarket",
         description: "Monthly seller subscription",
         prefill: { name: seller?.shopName, email: seller?.email },
         theme: { color: "#C0622A" },

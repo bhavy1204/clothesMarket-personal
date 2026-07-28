@@ -17,7 +17,6 @@ export async function staffLogout(navigate) {
   } catch {
     // clearAuth runs regardless — cookie may already be expired
   } finally {
-    console.log("clearAuth called");
     useAuthStore.getState().clearAuth();
 
     if (navigate) {

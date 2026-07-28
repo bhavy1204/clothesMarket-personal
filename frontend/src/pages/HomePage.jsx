@@ -54,8 +54,6 @@ function BannerSlider() {
   const selectedCity = useCityStore((state) => state.selectedCity);
   const cityId = selectedCity?._id;
 
-  console.log(cityId)
-
   useEffect(() => {
     let isCancelled = false;
     siteContentService

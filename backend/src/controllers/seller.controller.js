@@ -129,7 +129,7 @@ const registerSeller = asyncHandler(async (req, res) => {
     await OTP.findOneAndDelete({ email, purpose: "email-verification" });
     await OTP.create({
         email, otp, purpose: "email-verification",
-        expiresAt: new Date(Date.now() + 10 * 60 * 1000),
+        expiresAt: new Date(Date.now() + 15 * 60 * 1000),
     });
     await sendOTPEmail(email, otp, "email-verification");
 
