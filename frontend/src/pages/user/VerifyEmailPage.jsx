@@ -98,15 +98,25 @@ export default function VerifyEmailPage() {
         <div className="text-center mb-6">
           <h1 className="text-xl font-bold text-text">Verify your email</h1>
           <p className="text-sm text-text-muted mt-1">
-            {email
-              ? <>We sent a code to <span className="text-text font-medium">{email}</span></>
-              : "Enter the code sent to your email"}
+            {email ? (
+              <>
+                We sent a code to{" "}
+                <span className="text-text font-medium">{email}</span>
+              </>
+            ) : (
+              "Enter the code sent to your email"
+            )}
           </p>
         </div>
 
         <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-4">
           {!email && (
-            <Input label="Email" type="email" error={errors.email?.message} {...register("email")} />
+            <Input
+              label="Email"
+              type="email"
+              error={errors.email?.message}
+              {...register("email")}
+            />
           )}
 
           <Input
@@ -118,7 +128,12 @@ export default function VerifyEmailPage() {
             {...register("otp")}
           />
 
-          <Button type="submit" variant="primary" fullWidth isLoading={isSubmitting}>
+          <Button
+            type="submit"
+            variant="primary"
+            fullWidth
+            isLoading={isSubmitting}
+          >
             Verify
           </Button>
         </form>
@@ -135,7 +150,10 @@ export default function VerifyEmailPage() {
         </div>
 
         <p className="text-center text-sm text-text-muted mt-6">
-          <Link to="/login" className="text-primary font-medium hover:underline">
+          <Link
+            to={isSeller ? "/seller/login" : "/login"}
+            className="text-primary font-medium hover:underline"
+          >
             Back to login
           </Link>
         </p>

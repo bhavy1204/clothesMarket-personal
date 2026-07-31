@@ -34,7 +34,20 @@ const registerUser = asyncHandler(async (req, res) => {
 
     const existingUser = await User.findOne({ email });
     if (existingUser) {
-        throw new APIError(409, "Email is already registered");
+        if (existingUser.isEmailVerified) {
+            throw new APIError(409, "Email is already registered");
+        }
+        // Unverified user retrying — resend OTP instead of blocking
+        const otp = generateOTP();
+        await OTP.findOneAndDelete({ email, purpose: "email-verification" });
+        await OTP.create({
+            email, otp, purpose: "email-verification",
+            expiresAt: new Date(Date.now() + 15 * 60 * 1000),
+        });
+        await sendOTPEmail(email, otp, "email-verification");
+        return res.status(200).json(
+            new APIResponse(200, null, "Verification email resent. Please check your inbox.")
+        );
     }
 
     const user = await User.create({ fullName, email, password });
@@ -49,10 +62,15 @@ const registerUser = asyncHandler(async (req, res) => {
         email,
         otp,
         purpose: "email-verification",
-        expiresAt: new Date(Date.now() + 10 * 60 * 1000),
+        expiresAt: new Date(Date.now() + 15 * 60 * 1000),
     });
 
-    await sendOTPEmail(email, otp, "email-verification");
+    try {
+        await sendOTPEmail(email, otp, "email-verification");
+    } catch (err) {
+        console.error(`Failed to send OTP email to ${email}:`, err);
+        throw new APIError(500, "Some error while sending the email")
+    }
 
     const createdUser = await User.findById(user._id).select(
         "-password -refreshToken"

@@ -75,10 +75,32 @@ const registerSeller = asyncHandler(async (req, res) => {
         Seller.findOne({ username }),
     ]);
 
-    if (existingEmail)
-        throw new APIError(409, "Email is already registered");
     if (existingUsername)
         throw new APIError(409, "Username is already taken");
+
+    if (existingEmail) {
+        if (existingEmail.isEmailVerified) {
+            throw new APIError(409, "Email is already registered");
+        }
+        const otp = generateOTP();
+        await OTP.findOneAndDelete({ email, purpose: "email-verification" });
+        await OTP.create({
+            email, otp, purpose: "email-verification",
+            expiresAt: new Date(Date.now() + 15 * 60 * 1000),
+        });
+
+        try {
+            await sendOTPEmail(email, otp, "email-verification");
+        } catch (err) {
+            console.error(`Failed to send OTP email to ${email}:`, err);
+            throw new APIError(500, "Some error while sending the email");
+        }
+
+        return res.status(200).json(
+            new APIResponse(200, { _id: existingEmail._id, email: existingEmail.email },
+                "Verification email resent. Please check your inbox.")
+        );
+    }
 
     const city = await City.findById(cityId);
 
@@ -131,7 +153,13 @@ const registerSeller = asyncHandler(async (req, res) => {
         email, otp, purpose: "email-verification",
         expiresAt: new Date(Date.now() + 15 * 60 * 1000),
     });
-    await sendOTPEmail(email, otp, "email-verification");
+
+    try {
+        await sendOTPEmail(email, otp, "email-verification");
+    } catch (err) {
+        console.error(`Failed to send OTP email to ${email}:`, err);
+        throw new APIError(500, "Some error while sending the email");
+    }
 
     return res.status(201).json(
         new APIResponse(201, { _id: seller._id, email: seller.email },

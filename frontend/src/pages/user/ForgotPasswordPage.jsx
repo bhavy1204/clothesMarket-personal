@@ -1,8 +1,8 @@
 import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useLocation, Link } from "react-router-dom";
-import { Envelope, CheckCircle } from "@phosphor-icons/react";
+import { useLocation, useNavigate, Link } from "react-router-dom";
+import { Envelope } from "@phosphor-icons/react";
 import toast from "react-hot-toast";
 import { userService, sellerService } from "@/api/index";
 import { forgotPasswordSchema } from "@/lib/validators";
@@ -12,16 +12,17 @@ import Button from "@/components/common/Button";
 /**
  * ForgotPasswordPage
  * Common for both actors — rendered at /forgot-password and
- * /seller/forgot-password. Sends a reset link to the given email;
- * the link lands on ResetPasswordPage with a token in the query string.
+ * /seller/forgot-password. Backend sends an OTP (not a link) to the
+ * given email; we forward the user to the reset-password page with
+ * the email in router state so they can enter the OTP + new password.
  */
 export default function ForgotPasswordPage() {
   const location = useLocation();
+  const navigate = useNavigate();
   const isSeller = location.pathname.startsWith("/seller");
   const service = isSeller ? sellerService : userService;
 
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [isSent, setIsSent] = useState(false);
 
   const {
     register,
@@ -35,9 +36,13 @@ export default function ForgotPasswordPage() {
     setIsSubmitting(true);
     try {
       await service.forgotPassword(data);
-      setIsSent(true);
+      toast.success("OTP sent — check your email");
+      navigate(isSeller ? "/seller/reset-password" : "/reset-password", {
+        state: { email: data.email },
+        replace: true,
+      });
     } catch (err) {
-      toast.error(err?.response?.data?.message || "Couldn't send the reset link");
+      toast.error(err?.response?.data?.message || "Couldn't send the OTP");
     } finally {
       setIsSubmitting(false);
     }
@@ -46,47 +51,32 @@ export default function ForgotPasswordPage() {
   return (
     <div className="min-h-[calc(100vh-4rem)] flex items-center justify-center px-4 py-10 bg-bg">
       <div className="w-full max-w-sm">
-        {isSent ? (
-          <div className="text-center flex flex-col items-center gap-3">
-            <CheckCircle size={40} weight="fill" className="text-success" />
-            <h1 className="text-xl font-bold text-text">Check your email</h1>
-            <p className="text-sm text-text-muted">
-              If an account exists for that email, we've sent a link to reset your password.
-            </p>
-            <Link to="/login" className="text-sm text-primary font-medium hover:underline mt-2">
-              Back to login
-            </Link>
-          </div>
-        ) : (
-          <>
-            <div className="text-center mb-6">
-              <h1 className="text-xl font-bold text-text">Forgot your password?</h1>
-              <p className="text-sm text-text-muted mt-1">
-                Enter your email and we'll send you a reset link
-              </p>
-            </div>
+        <div className="text-center mb-6">
+          <h1 className="text-xl font-bold text-text">Forgot your password?</h1>
+          <p className="text-sm text-text-muted mt-1">
+            Enter your email and we'll send you an OTP to reset your password
+          </p>
+        </div>
 
-            <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-4">
-              <Input
-                label="Email"
-                type="email"
-                leftIcon={<Envelope size={16} />}
-                error={errors.email?.message}
-                {...register("email")}
-              />
+        <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-4">
+          <Input
+            label="Email"
+            type="email"
+            leftIcon={<Envelope size={16} />}
+            error={errors.email?.message}
+            {...register("email")}
+          />
 
-              <Button type="submit" variant="primary" fullWidth isLoading={isSubmitting}>
-                Send reset link
-              </Button>
-            </form>
+          <Button type="submit" variant="primary" fullWidth isLoading={isSubmitting}>
+            Send OTP
+          </Button>
+        </form>
 
-            <p className="text-center text-sm text-text-muted mt-6">
-              <Link to="/login" className="text-primary font-medium hover:underline">
-                Back to login
-              </Link>
-            </p>
-          </>
-        )}
+        <p className="text-center text-sm text-text-muted mt-6">
+          <Link to="/login" className="text-primary font-medium hover:underline">
+            Back to login
+          </Link>
+        </p>
       </div>
     </div>
   );

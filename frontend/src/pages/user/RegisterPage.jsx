@@ -9,6 +9,7 @@ import { userRegisterSchema } from "@/lib/validators";
 import Input from "@/components/common/Input";
 import Button from "@/components/common/Button";
 import { GoogleLogin } from "@react-oauth/google";
+import useAuthStore from "../../store/useAuthStore";
 
 /**
  * RegisterPage (user)
@@ -22,6 +23,7 @@ import { GoogleLogin } from "@react-oauth/google";
 export default function RegisterPage() {
   const navigate = useNavigate();
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const setUser = useAuthStore((state) => state.setUser);
 
   const {
     register,

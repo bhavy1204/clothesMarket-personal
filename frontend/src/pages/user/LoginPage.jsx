@@ -143,14 +143,24 @@ export default function LoginPage() {
             {...register("password")}
           />
 
-          <div className="flex justify-end -mt-2">
+          <div className="flex items-center -mt-2 mb-1 text-xs">
+            <Link
+              to={
+                activeTab === "seller"
+                  ? "/seller/verify-email"
+                  : "/verify-email"
+              }
+              className="text-text-muted hover:text-primary transition-colors"
+            >
+              Verify email
+            </Link>
             <Link
               to={
                 activeTab === "seller"
                   ? "/seller/forgot-password"
                   : "/forgot-password"
               }
-              className="text-xs text-primary hover:underline"
+              className="ml-auto text-primary font-medium hover:underline"
             >
               Forgot password?
             </Link>
@@ -212,10 +222,7 @@ export default function LoginPage() {
         )}
 
         <p className="text-center text-sm text-text-muted mt-6">
-          <Link
-            to="/"
-            className="text-primary font-medium hover:underline"
-          >
+          <Link to="/" className="text-primary font-medium hover:underline">
             Skip to Home
           </Link>
         </p>

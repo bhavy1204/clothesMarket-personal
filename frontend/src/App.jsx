@@ -132,6 +132,10 @@ export default function App() {
             path="/seller/forgot-password"
             element={<ForgotPasswordPage />}
           />
+          <Route
+            path="/seller/reset-password"
+            element={<ResetPasswordPage />}
+          />
         </Route>
 
         <Route element={<PublicOnlyRoute actorType="staff" />}>
