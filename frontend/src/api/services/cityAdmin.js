@@ -16,6 +16,9 @@ const cityAdminService = {
     approveSeller: (sellerId) =>
         api.patch(`${BASE}/sellers/${sellerId}/approve`),
 
+    verifySellerEmail: (sellerId) =>
+        api.patch(`${BASE}/sellers/${sellerId}/verify-email`),
+
     suspendSeller: (sellerId) =>
         api.patch(`${BASE}/sellers/${sellerId}/suspend`),
 

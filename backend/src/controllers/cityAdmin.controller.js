@@ -35,7 +35,7 @@ const approveCitySeller = asyncHandler(async (req, res) => {
     );
 });
 
-const suspendCitySeller = asyncHandler(async (req, res) => {
+const verifySellerEmail = asyncHandler(async(req,res)=>{
     const { sellerId } = req.params;
 
     const staff = req.staff;
@@ -58,11 +58,50 @@ const suspendCitySeller = asyncHandler(async (req, res) => {
         throw new APIError(403, "You can only manage sellers of your city");
     }
 
-    seller.status = "suspended";
+    if (seller.isEmailVerified) {
+        throw new APIError(400, "Seller email is already verified");
+    }
+
+    seller.isEmailVerified = true;
     await seller.save();
 
     return res.status(200).json(
-        new APIResponse(200, seller, "Seller suspended successfully")
+        new APIResponse(200, seller, "Seller email verified successfully")
+    );
+})
+
+const suspendCitySeller = asyncHandler(async (req, res) => {
+    // const { sellerId } = req.params;
+
+    // const staff = req.staff;
+
+    // if (!staff) {
+    //     throw new APIError(404, "Staff not found");
+    // }
+
+    // if (staff.role !== "city-admin") {
+    //     throw new APIError(403, "Only city admin can perform this action");
+    // }
+
+    // const seller = await Seller.findById(sellerId);
+
+    // if (!seller) {
+    //     throw new APIError(404, "Seller not found");
+    // }
+
+    // if (seller.cityId.toString() !== staff.cityId.toString()) {
+    //     throw new APIError(403, "You can only manage sellers of your city");
+    // }
+
+    // seller.status = "suspended";
+    // await seller.save();
+
+    // return res.status(200).json(
+    //     new APIResponse(200, seller, "Seller suspended successfully")
+    // );
+
+    return res.status(200).json(
+        new APIResponse(200, {} , "Contact Admin for this action ")
     );
 });
 
@@ -141,6 +180,7 @@ const getCitySellerByEmail = asyncHandler(async (req, res) => {
 
 export {
     approveCitySeller,
+    verifySellerEmail,
     suspendCitySeller,
     getCityStaff,
     getCitySellers,

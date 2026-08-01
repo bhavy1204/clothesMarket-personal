@@ -32,6 +32,7 @@ export default function CityAdminSellersPage() {
   const [sellers, setSellers] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   const [actioningId, setActioningId] = useState(null);
+  const [verifyingEmailId, setVerifyingEmailId] = useState(null);
 
   const fetchSellers = useCallback(() => {
     setIsLoading(true);
@@ -71,6 +72,22 @@ export default function CityAdminSellersPage() {
       );
     } finally {
       setActioningId(null);
+    }
+  };
+
+  const handleVerifyEmail = async (seller) => {
+    try {
+      setVerifyingEmailId(seller._id);
+
+      await cityAdminService.verifySellerEmail(seller._id);
+      toast.success(`${seller.shopName} approved`);
+      fetchSellers();
+    } catch (error) {
+      toast.error(
+        err?.response?.data?.message || "Couldn't approve this seller",
+      );
+    } finally {
+      setVerifyingEmailId(null);
     }
   };
 
@@ -182,13 +199,27 @@ export default function CityAdminSellersPage() {
                   >
                     <option value="pending">Pending</option>
                     <option value="approved">Approved</option>
-                    <option value="suspended">Suspended</option>
+                    {/* <option value="suspended">Suspended</option> */}
                   </select>
 
                   {actioningId === seller._id && (
-                    <p className="text-xs text-text-muted">Updating seller...</p>
+                    <p className="text-xs text-text-muted">
+                      Updating seller...
+                    </p>
                   )}
                 </div>
+                {!seller.isEmailVerified && (
+                  <button
+                    type="button"
+                    disabled={verifyingEmailId === seller._id}
+                    onClick={() => handleVerifyEmail(seller)}
+                    className="mt-2 h-10 rounded-lg bg-amber-500 px-4 text-sm font-medium text-white transition hover:bg-amber-600 disabled:cursor-not-allowed disabled:opacity-60"
+                  >
+                    {verifyingEmailId === seller._id
+                      ? "Verifying..."
+                      : "Verify Email"}
+                  </button>
+                )}
               </div>
             </div>
           ))}

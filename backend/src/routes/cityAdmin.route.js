@@ -2,6 +2,7 @@ import { Router } from "express";
 
 import {
     approveCitySeller,
+    verifySellerEmail,
     suspendCitySeller,
     getCityStaff,
     getCitySellers,
@@ -25,7 +26,8 @@ router.use(verifyStaffJWT, verifyCityAdmin);
 router.get("/sellers", validatePaginationQuery, getCitySellers);
 router.get("/seller/search", getCitySellerByEmail);
 router.patch("/sellers/:sellerId/approve", approveCitySeller);
-router.patch("/sellers/:sellerId/suspend", validateObjectId, suspendCitySeller);
+router.patch("/sellers/:sellerId/verify-email", verifySellerEmail)
+router.patch("/sellers/:sellerId/suspend", suspendCitySeller);
 
 //staff
 
