@@ -32,7 +32,11 @@ export default function CitySelector({ className = "", label }) {
           ? activeCities.find((city) => city._id === stored._id)
           : null;
 
-        setSelectedCity(matched ?? activeCities[0]);
+        const defaultCity =
+          activeCities.find((city) => city.name.toLowerCase() === "udaipur") ??
+          activeCities[0];
+          
+        setSelectedCity(matched ?? defaultCity);
       })
       .catch(() => {
         setCities([]);

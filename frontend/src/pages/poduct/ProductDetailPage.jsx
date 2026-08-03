@@ -55,7 +55,6 @@ export default function ProductDetailPage() {
   const [reviews, setReviews] = useState([]);
   const [isLoadingReviews, setIsLoadingReviews] = useState(true);
 
-
   useEffect(() => {
     let isCancelled = false;
     setIsLoading(true);
@@ -131,7 +130,21 @@ export default function ProductDetailPage() {
       toast.error("This seller hasn't listed a contact number");
       return;
     }
-    const message = `Hi, I'm interested in "${product.name}" (${formatPrice(product.discountedPrice || product.price)}) on CLothesMarket.`;
+
+    const productLink = window.location.href;
+   
+    const message = `Hi,
+
+I found this product on ClothesMarket and I'm interested in it.
+
+• Product: *${product.productName}*
+• Price: ${formatPrice(product.discountedPrice || product.price)}
+
+• Product Link:
+${productLink}
+
+`;
+     
     window.open(
       buildWhatsAppLink(phone, message),
       "_blank",
@@ -139,9 +152,9 @@ export default function ProductDetailPage() {
     );
   };
 
-  const scrollToReviews = () => {
-    document.getElementById("reviews")?.scrollIntoView({ behavior: "smooth" });
-  };
+  // const scrollToReviews = () => {
+  //   document.getElementById("reviews")?.scrollIntoView({ behavior: "smooth" });
+  // };
 
   if (isLoading) {
     return <Loader className="py-24" label="Loading product..." />;
@@ -159,7 +172,7 @@ export default function ProductDetailPage() {
   }
 
   const {
-    name,
+    productName,
     images = [],
     price,
     discountedPrice,
@@ -256,7 +269,7 @@ export default function ProductDetailPage() {
           {/* Title + Rating */}
           <div className="space-y-3">
             <h1 className="text-3xl lg:text-4xl font-bold tracking-tight text-text leading-tight">
-              {name}
+              {productName}
             </h1>
 
             {product.numReviews > 0 && (
@@ -370,7 +383,7 @@ export default function ProductDetailPage() {
       )}
 
       {/* ================= REVIEWS ================= */}
-      <section
+      {/* <section
         id="reviews"
         className="mt-16 rounded-3xl border border-border bg-surface-raised shadow-sm overflow-hidden"
       >
@@ -421,7 +434,7 @@ export default function ProductDetailPage() {
             />
           </div>
         </div>
-      </section>
+      </section> */}
     </div>
   );
 }

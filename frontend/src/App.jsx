@@ -63,6 +63,10 @@ import PrivacyPolicyPage from "./components/legal/privacyPolicy.jsx";
 import TermsAndConditionsPage from "./components/legal/termsAndCondition.jsx";
 import RefundCancellationPolicyPage from "./components/legal/RefundCancellationPolicy.jsx";
 
+import { initAnalytics } from "./lib/analytics.js";
+import AnalyticsTracker from "./components/common/AnalyticsTracker.jsx";
+
+
 // Temporary placeholder so App.jsx is functional before pages are built
 const Placeholder = ({ name }) => (
   <div className="p-8 text-lg font-medium">{name}</div>
@@ -74,6 +78,7 @@ export default function App() {
 
   useEffect(() => {
     checkAuth();
+    initAnalytics();
   }, []);
 
   if (isLoading) {
@@ -87,6 +92,7 @@ export default function App() {
   return (
     <>
       <OfflineBanner />
+      <AnalyticsTracker />
       <Routes>
         {/* ── Public + user routes (Navbar + Footer) ─────────────────────── */}
         <Route element={<MainLayout />}>

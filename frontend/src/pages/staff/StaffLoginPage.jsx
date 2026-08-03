@@ -10,6 +10,7 @@ import { staffLoginSchema } from "@/lib/validators";
 import { getStaffDashboardPath } from "@/lib/staffAuth";
 import Input from "@/components/common/Input";
 import Button from "@/components/common/Button";
+import { Link } from "react-router-dom";
 
 export default function StaffLoginPage() {
   const navigate = useNavigate();
@@ -67,10 +68,21 @@ export default function StaffLoginPage() {
             {...register("password")}
           />
 
-          <Button type="submit" variant="primary" fullWidth isLoading={isSubmitting}>
+          <Button
+            type="submit"
+            variant="primary"
+            fullWidth
+            isLoading={isSubmitting}
+          >
             Log in
           </Button>
         </form>
+
+        <p className="text-center text-sm text-text-muted mt-6">
+          <Link to="/" className="text-primary font-medium hover:underline">
+            Go To Home
+          </Link>
+        </p>
       </div>
     </div>
   );

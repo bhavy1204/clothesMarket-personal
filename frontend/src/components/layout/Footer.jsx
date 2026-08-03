@@ -10,7 +10,7 @@ export default function Footer() {
 
  
   return (
-    <footer className="bg-surface border-t border-border mt-16">
+    <footer className="bg-surface border-t border-border ">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 py-8 sm:py-10 grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-6 sm:gap-8">
         <div className="col-span-2 sm:col-span-3 lg:col-span-1">
           <p className="text-lg font-bold text-primary mb-2">ClothesMarket</p>
