@@ -4,8 +4,11 @@ import {
   WhatsappLogo,
   EnvelopeSimple,
 } from "@phosphor-icons/react";
+import InstallModal from "../common/InstallModal";
+import { useState } from "react";
 
 export default function Footer() {
+  const [showInstallModal, setShowInstallModal] = useState(false);
   const year = new Date().getFullYear();
 
  
@@ -35,6 +38,21 @@ export default function Footer() {
             { to: "/login", label: "Seller login" },
             { to: "/staff/login", label: "Staff login" },
           ]}
+        />
+
+        <FooterColumn
+          title="App"
+          links={[
+            {
+              label: "Install App",
+              onClick: () => setShowInstallModal(true),
+            },
+          ]}
+        />
+
+        <InstallModal
+          open={showInstallModal}
+          onClose={() => setShowInstallModal(false)}
         />
 
         <FooterColumn
@@ -92,19 +110,27 @@ function FooterColumn({ title, links }) {
     <div>
       <p className="text-sm font-semibold text-text mb-3">{title}</p>
       <ul className="flex flex-col gap-2">
-        {links.map((link) => (
-          <li key={link.to}>
-            <Link
-              to={link.to}
-              className="text-sm text-text-muted hover:text-primary"
-            >
-              {link.label}
-            </Link>
+        {links.map((link, index) => (
+          <li key={link.to || link.label || index}>
+            {link.to ? (
+              <Link
+                to={link.to}
+                className="text-sm text-text-muted hover:text-primary transition-colors"
+              >
+                {link.label}
+              </Link>
+            ) : (
+              <button
+                type="button"
+                onClick={link.onClick}
+                className="text-sm text-text-muted hover:text-primary transition-colors text-left"
+              >
+                {link.label}
+              </button>
+            )}
           </li>
         ))}
       </ul>
     </div>
   );
 }
-
-

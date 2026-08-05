@@ -66,6 +66,8 @@ import RefundCancellationPolicyPage from "./components/legal/RefundCancellationP
 import { initAnalytics } from "./lib/analytics.js";
 import AnalyticsTracker from "./components/common/AnalyticsTracker.jsx";
 
+import InstallBanner from "./components/common/InstallBanner.jsx";
+
 
 // Temporary placeholder so App.jsx is functional before pages are built
 const Placeholder = ({ name }) => (
@@ -91,6 +93,7 @@ export default function App() {
 
   return (
     <>
+      <InstallBanner/>
       <OfflineBanner />
       <AnalyticsTracker />
       <Routes>
