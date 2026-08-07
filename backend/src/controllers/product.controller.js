@@ -51,6 +51,33 @@ const buildSortOption = (sort) => {
     }
 };
 
+const refreshSubscriptionStatus = async (seller) => {
+    const now = new Date();
+
+    if (
+        seller.subscription.status === "trial" &&
+        seller.subscription.trialEndsAt &&
+        seller.subscription.trialEndsAt <= now
+    ) {
+        seller.subscription.status = "expired";
+        await seller.save({ validateBeforeSave: false });
+    }
+};
+
+const hasSellerAccess = (seller)=>{
+    if (seller.subscription.status === "active") {
+        return true;
+    }
+
+    const now = new Date();
+
+    if (seller.subscription.status === "trial" && seller.subscription.trialEndsAt && seller.subscription.trialEndsAt > now) {
+        return true;
+    }
+
+    return false;
+}
+
 // ─── CREATE PRODUCT ───────────────────────────────────────────────────────────
 
 const createProduct = asyncHandler(async (req, res) => {
@@ -60,9 +87,14 @@ const createProduct = asyncHandler(async (req, res) => {
         throw new APIError(403, "Your account is pending admin approval");
     }
 
-    if (seller.subscription.status !== "active") {
-        throw new APIError(403, "An active subscription is required to list products");
-    }
+    await refreshSubscriptionStatus(seller);
+
+    if (!hasSellerAccess(seller)) {
+        throw new APIError(
+            403,
+            "An active subscription is required."
+        );
+    };
 
     const files = req.files?.images;
     if (!files || files.length === 0) {

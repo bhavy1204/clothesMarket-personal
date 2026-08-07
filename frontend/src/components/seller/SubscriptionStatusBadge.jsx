@@ -7,6 +7,12 @@ import { CheckCircle, Clock, XCircle } from "@phosphor-icons/react";
  * status: "active" | "pending" | "expired" | "cancelled" (mirrors SUBSCRIPTION_STATUS constant)
  */
 const STATUS_CONFIG = {
+  trial: {
+    label: "Free Trial",
+    icon: Clock,
+    classes: "bg-info-bg text-info border-info-border",
+  },
+
   active: {
     label: "Active",
     icon: CheckCircle,
@@ -45,4 +51,3 @@ export default function SubscriptionStatusBadge({ status }) {
     </span>
   );
 }
-

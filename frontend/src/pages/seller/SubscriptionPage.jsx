@@ -85,9 +85,9 @@ export default function SellerSubscriptionPage() {
               razorpay_signature: response.razorpay_signature,
             });
             toast.success("Subscription activated");
-            updateSellerState({ subscriptionStatus: "active" });
             const res = await sellerService.getSubscription();
             setSubscription(res.data.data);
+            // updateSellerState({ subscriptionStatus: "active" });
           } catch (err) {
             toast.error(
               err?.response?.data?.message || "Payment verification failed",
@@ -121,9 +121,9 @@ export default function SellerSubscriptionPage() {
     try {
       await paymentService.cancelSubscription();
       toast.success("Subscription cancelled");
-      updateSellerState({ subscriptionStatus: "cancelled" });
       const res = await sellerService.getSubscription();
       setSubscription(res.data.data);
+      // updateSellerState({ subscriptionStatus: "cancelled" });
     } catch (err) {
       toast.error(
         err?.response?.data?.message || "Couldn't cancel your subscription",
@@ -139,6 +139,8 @@ export default function SellerSubscriptionPage() {
 
   const status = subscription?.status || seller?.subscriptionStatus;
   const isActive = status === "active";
+  const isTrial = status === "trial";
+  const hasAccess = isActive || isTrial;
 
   return (
     <div className="flex flex-col gap-6 p-4 sm:p-6 max-w-lg">
@@ -150,11 +152,19 @@ export default function SellerSubscriptionPage() {
           {status && <SubscriptionStatusBadge status={status} />}
         </div>
 
-        <div className="flex items-baseline gap-1">
-          <span className="text-2xl font-bold text-text">
-            {formatPrice(MONTHLY_PRICE)}
-          </span>
-          <span className="text-sm text-text-muted">/ month</span>
+        <div className="flex flex-col gap-1">
+          {isTrial && (
+            <p className="text-sm font-medium text-success">
+              You're currently on your free 30-day trial.
+            </p>
+          )}
+
+          <div className="flex items-baseline gap-1">
+            <span className="text-2xl font-bold text-text">
+              {formatPrice(MONTHLY_PRICE)}
+            </span>
+            <span className="text-sm text-text-muted">/ month</span>
+          </div>
         </div>
 
         {subscription?.nextBillingDate && (
@@ -169,6 +179,12 @@ export default function SellerSubscriptionPage() {
           <Feature>Appear in nearby-shop search</Feature>
           <Feature>Public shop profile page</Feature>
         </ul>
+
+        {isTrial && subscription?.trialEndsAt && (
+          <p className="text-xs text-text-muted">
+            Free trial ends on {formatDate(subscription.trialEndsAt)}
+          </p>
+        )}
 
         {isActive ? (
           <Button
@@ -190,12 +206,12 @@ export default function SellerSubscriptionPage() {
         )}
       </div>
 
-      {!isActive && (
+      {!hasAccess && (
         <div className="flex items-start gap-2 text-xs text-text-muted">
           <WarningCircle size={14} className="shrink-0 mt-0.5" />
           <span>
-            Your shop stays hidden from customers until your subscription is
-            active.
+            Your subscription is inactive. Subscribe to continue listing
+            products and keep your shop visible.
           </span>
         </div>
       )}

@@ -61,6 +61,19 @@ const processAndUploadBanner = async (buffer, filename) => {
     return { url, key };
 };
 
+const refreshSubscriptionStatus = async (seller) => {
+    const now = new Date();
+
+    if (
+        seller.subscription.status === "trial" &&
+        seller.subscription.trialEndsAt &&
+        seller.subscription.trialEndsAt <= now
+    ) {
+        seller.subscription.status = "expired";
+        await seller.save({ validateBeforeSave: false });
+    }
+};
+
 // controllers
 
 const registerSeller = asyncHandler(async (req, res) => {
@@ -142,6 +155,15 @@ const registerSeller = asyncHandler(async (req, res) => {
             seller._id.toString()
         );
         seller.banner = url;
+    }
+
+    const now = new Date();
+
+    seller.subscription={
+        status:"trial",
+        trialEndsAt: new Date(
+            now.getTime() + 30 * 24 * 60 * 60 * 1000
+        )
     }
 
     await seller.save({ validateBeforeSave: false });
@@ -612,7 +634,9 @@ const getNearbySellers = asyncHandler(async (req, res) => {
 });
 
 const getSellerSubscription = asyncHandler(async (req, res) => {
-    const seller = await Seller.findById(req.user._id).select("subscription").lean();
+    const seller = await Seller.findById(req.user._id).select("subscription");
+
+    await refreshSubscriptionStatus(seller);
 
     return res.status(200).json(
         new APIResponse(200, seller.subscription, "Subscription details fetched successfully")

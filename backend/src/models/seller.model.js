@@ -139,6 +139,7 @@ const sellerSchema = new mongoose.Schema({
         status: {
             type: String,
             enum: [
+                "trial",
                 "active",
                 "inactive",
                 "pending",
@@ -146,8 +147,10 @@ const sellerSchema = new mongoose.Schema({
                 "cancelled",
                 "expired"
             ],
-            default: "inactive"
+            default: "trial"
         },
+
+        trialEndsAt: Date,
 
         planId: {
             type: String,

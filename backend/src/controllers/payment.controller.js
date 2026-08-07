@@ -404,6 +404,9 @@ const webhookHandler = asyncHandler(async (req, res) => {
 
             seller.subscription.status = "active";
 
+
+            seller.subscription.trialEndsAt = undefined;
+            
             seller.subscription.planId =
                 subscription.plan_id;
 

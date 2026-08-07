@@ -2,6 +2,8 @@ node_modules/
 .env
 *.txt
 
+data/
+
 # Logs
 logs
 *.log
