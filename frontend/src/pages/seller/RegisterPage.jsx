@@ -260,12 +260,12 @@ export default function SellerRegisterPage() {
                 Select a category
               </option>
               <option value="clothing">clothing</option>
-              <option value="womens-wear">Women's wear</option>
+              {/* <option value="womens-wear">Women's wear</option>
               <option value="kids-wear">Kids' wear</option>
               <option value="footwear">Footwear</option>
               <option value="accessories">Accessories</option>
               <option value="ethnic-wear">Ethnic wear</option>
-              <option value="other">Other</option>
+              <option value="other">Other</option> */}
             </select>
             {errors.shopCategory && (
               <p className="text-xs text-error mt-1">

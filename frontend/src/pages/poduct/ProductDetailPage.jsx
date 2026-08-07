@@ -101,9 +101,9 @@ export default function ProductDetailPage() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [product?._id, page, limit]);
 
-  useEffect(() => {
-    fetchReviews();
-  }, [fetchReviews]);
+  // useEffect(() => {
+  //   fetchReviews();
+  // }, [fetchReviews]);
 
   const handleToggleWishlist = async () => {
     if (actorType !== "user") {
