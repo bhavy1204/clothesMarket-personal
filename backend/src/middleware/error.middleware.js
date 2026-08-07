@@ -18,6 +18,7 @@ export const errorMiddleware = (err, req, res, next) => {
             field: e.path,
             message: e.message
         }))
+        console.log("400 Error ">>err)
         return res.status(400).json({
             success: false,
             message: "Validation failed",
