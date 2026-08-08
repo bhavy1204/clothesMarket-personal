@@ -304,10 +304,8 @@ export default function SellerRegisterPage() {
               {...register("cityId")}
             >
               <option value="">
-                {isLoadingCities ? "Loading cities..." : "Select a city?"}
+                {isLoadingCities ? "Loading cities..." : "Select a city"}
               </option>
-
-              <option value="test-city">TEST CITY</option>
 
               {cities.map((city) => (
                 <option key={city._id} value={city._id}>
