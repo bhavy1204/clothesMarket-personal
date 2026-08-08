@@ -287,36 +287,41 @@ export default function SellerRegisterPage() {
             {...register("addressLine2")}
           />
 
-          <div>
-            <label className="text-sm font-medium text-text block mb-1.5">
-              City
-            </label>
+          
+            <div>
+              <label className="text-sm font-medium text-text block mb-1.5">
+                City
+              </label>
 
-            <div className="text-xs text-red-500">
-              {isLoadingCities
-                ? "Loading..."
-                : `Cities loaded: ${cities.length}`}
-            </div>
+              <div className="text-xs text-red-500 truncate">
+                {isLoadingCities
+                  ? "Loading..."
+                  : `Cities loaded: ${cities.length}`}
+              </div>
 
-            <select
-              disabled={isLoadingCities}
-              className="w-full h-11 rounded-md border border-border bg-surface-raised text-sm text-text px-3 capitalize focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary disabled:cursor-not-allowed disabled:opacity-60"
-              {...register("cityId")}
-            >
-              <option value="">
-                {isLoadingCities ? "Loading cities..." : "Select a city"}
-              </option>
-
-              {cities.map((city) => (
-                <option key={city._id} value={city._id}>
-                  {city.name}
+              <select
+                disabled={isLoadingCities || cities.length === 0}
+                className="w-full h-11 rounded-md border border-border bg-surface-raised text-sm text-text px-3 capitalize focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary disabled:cursor-not-allowed disabled:opacity-60"
+                {...register("cityId")}
+                defaultValue=""
+              >
+                <option value="" disabled hidden>
+                  {isLoadingCities ? "Loading cities..." : "Select a city"}
                 </option>
-              ))}
-            </select>
-            {errors.cityId && (
-              <p className="text-xs text-error mt-1">{errors.cityId.message}</p>
-            )}
-          </div>
+
+                {cities.map((city) => (
+                  <option key={city._id} value={city._id}>
+                    {city.name}
+                  </option>
+                ))}
+              </select>
+              {errors.cityId && (
+                <p className="text-xs text-error mt-1">
+                  {errors.cityId.message}
+                </p>
+              )}
+            </div>
+          
 
           <Input
             label="Postal code"

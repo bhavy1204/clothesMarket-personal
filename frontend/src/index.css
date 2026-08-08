@@ -134,3 +134,18 @@ input::-webkit-credentials-auto-fill-button {
   display: none !important;
 } */
 
+/* Fix for iOS select dropdowns */
+select {
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  appearance: none;
+  font-size: 16px !important;
+  min-height: 44px;
+}
+
+@supports (-webkit-touch-callout: none) {
+  select {
+    font-size: 16px !important;
+    padding: 10px 12px;
+  }
+}
