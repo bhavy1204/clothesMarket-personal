@@ -17,7 +17,7 @@ const Input = forwardRef(function Input({
     required = false,
     className = "",
     id,
-    autoComplete="none",
+    autoComplete="off",
     ...props
   },ref,) {
     

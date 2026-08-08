@@ -7,6 +7,7 @@ import { formatDate, formatPrice } from "@/lib/formatters";
 import SubscriptionStatusBadge from "@/components/seller/SubscriptionStatusBadge";
 import Button from "@/components/common/Button";
 import Loader from "@/components/common/Loader";
+import ConfirmModal from "@/components/common/ConfirmModal";
 
 /**
  * Seller SubscriptionPage — /seller/subscription
@@ -27,6 +28,7 @@ export default function SellerSubscriptionPage() {
   const [subscription, setSubscription] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
   const [isProcessing, setIsProcessing] = useState(false);
+  const [showTrialWarning, setShowTrialWarning] = useState(false);
 
   useEffect(() => {
     let isCancelled = false;
@@ -57,7 +59,10 @@ export default function SellerSubscriptionPage() {
       document.body.appendChild(script);
     });
 
+
   const handleSubscribe = async () => {
+     setShowTrialWarning(true);
+
     setIsProcessing(true);
     try {
       const scriptLoaded = await loadRazorpayScript();
@@ -215,6 +220,14 @@ export default function SellerSubscriptionPage() {
           </span>
         </div>
       )}
+      <ConfirmModal
+        isOpen={showTrialWarning}
+        title="End your free trial?"
+        description="Subscribing now will end your free trial immediately and start monthly billing. This can't be undone."
+        confirmLabel="Subscribe anyway"
+        onConfirm={handleSubscribe}
+        onCancel={() => setShowTrialWarning(false)}
+      />
     </div>
   );
 }

@@ -190,37 +190,37 @@ export default function SellerRegisterPage() {
           />
 
           <Input
-  label="Phone number"
-  type="tel"
-  leftIcon={<Phone size={16} />}
-  error={errors.phone?.message}
-  {...register("phone")}
-/>
+            label="Phone number"
+            type="tel"
+            leftIcon={<Phone size={16} />}
+            error={errors.phone?.message}
+            {...register("phone")}
+          />
 
-<div className="flex items-center gap-2">
-  <input
-    id="sameAsPhone"
-    type="checkbox"
-    className="h-4 w-4 rounded border-gray-300 text-primary focus:ring-primary"
-    {...register("sameAsPhone")}
-  />
-  <label
-    htmlFor="sameAsPhone"
-    className="text-sm text-text-muted cursor-pointer"
-  >
-    Same as phone number
-  </label>
-</div>
+          <div className="flex items-center gap-2">
+            <input
+              id="sameAsPhone"
+              type="checkbox"
+              className="h-4 w-4 rounded border-gray-300 text-primary focus:ring-primary"
+              {...register("sameAsPhone")}
+            />
+            <label
+              htmlFor="sameAsPhone"
+              className="text-sm text-text-muted cursor-pointer"
+            >
+              Same as phone number
+            </label>
+          </div>
 
-<Input
-  label="WhatsApp number"
-  type="tel"
-  helperText="Customers will contact you here"
-  leftIcon={<Phone size={16} />}
-  disabled={sameAsPhone}
-  error={errors.whatsappNumber?.message}
-  {...register("whatsappNumber")}
-/>
+          <Input
+            label="WhatsApp number"
+            type="tel"
+            helperText="Customers will contact you here"
+            leftIcon={<Phone size={16} />}
+            disabled={sameAsPhone}
+            error={errors.whatsappNumber?.message}
+            {...register("whatsappNumber")}
+          />
 
           <Input
             label="Alternate phone (optional)"
@@ -291,14 +291,24 @@ export default function SellerRegisterPage() {
             <label className="text-sm font-medium text-text block mb-1.5">
               City
             </label>
+
+            <div className="text-xs text-red-500">
+              {isLoadingCities
+                ? "Loading..."
+                : `Cities loaded: ${cities.length}`}
+            </div>
+
             <select
               disabled={isLoadingCities}
               className="w-full h-11 rounded-md border border-border bg-surface-raised text-sm text-text px-3 capitalize focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary disabled:cursor-not-allowed disabled:opacity-60"
               {...register("cityId")}
             >
               <option value="">
-                {isLoadingCities ? "Loading cities..." : "Select a city"}
+                {isLoadingCities ? "Loading cities..." : "Select a city?"}
               </option>
+
+              <option value="test-city">TEST CITY</option>
+
               {cities.map((city) => (
                 <option key={city._id} value={city._id}>
                   {city.name}
@@ -322,12 +332,14 @@ export default function SellerRegisterPage() {
           <Input
             label="Password"
             type="password"
+            autoComplete="current-password"
             leftIcon={<LockKey size={16} />}
             error={errors.password?.message}
             {...register("password")}
           />
 
           <Input
+            autoComplete="current-password"
             label="Confirm password"
             type="password"
             leftIcon={<LockKey size={16} />}
