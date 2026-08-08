@@ -51,7 +51,7 @@ const createCity = asyncHandler(async (req, res) => {
 
 const getAllCities = asyncHandler(async (req, res) => {
     
-    console.log("=== ACTIVE CITIES REQUEST ===");
+    console.log("=== ALL CITIES REQUEST ===");
     console.log("User-Agent:", req.get("user-agent"));
     console.log("Origin:", req.get("origin"));
     console.log("Referer:", req.get("referer"));
@@ -68,6 +68,14 @@ const getAllCities = asyncHandler(async (req, res) => {
 
 
 const getAllActiveCities = asyncHandler(async (req, res) => {
+    console.log("=== ACTIVE CITIES REQUEST ===");
+    console.log("User-Agent:", req.get("user-agent"));
+    console.log("Origin:", req.get("origin"));
+    console.log("Referer:", req.get("referer"));
+    console.log("IP:", req.ip);
+    console.log("Accept:", req.get("accept"));
+    console.log("Accept-Language:", req.get("accept-language"));
+    console.log("=============================");
     const cities = await City.find({ isActive: true }).sort({ name: 1 });
 
     return res
