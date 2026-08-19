@@ -19,7 +19,7 @@ import Button from "@/components/common/Button";
 export default function SellerProfilePage() {
   const navigate = useNavigate();
   const { seller, updateSellerState } = useAuthStore();
-  const [activeModal, setActiveModal] = useState(null); // "avatar" | "banner" | "description" | null
+  const [activeModal, setActiveModal] = useState(null); // "avatar" | "banner" | "profile" | null
 
   const {
     page,
@@ -61,15 +61,24 @@ export default function SellerProfilePage() {
         isOwner
         onEditBanner={() => setActiveModal("banner")}
         onEditAvatar={() => setActiveModal("avatar")}
-        onEditDescription={() => setActiveModal("description")}
+        onEditDescription={() => setActiveModal("profile")}
         onOpenLocation={() => setActiveModal("location")}
         onAddProduct={() => navigate("/seller/products")}
       />
 
       <div className="px-4 sm:px-6 py-6">
-        <h2 className="text-sm font-semibold text-text-muted uppercase tracking-wide mb-4">
-          Your products
-        </h2>
+        <div className="flex items-center justify-between mb-4">
+          <h2 className="text-sm font-semibold text-text-muted uppercase tracking-wide">
+            Your products
+          </h2>
+          <button
+            type="button"
+            onClick={() => setActiveModal("profile")}
+            className="text-sm font-medium text-primary hover:underline"
+          >
+            Edit profile
+          </button>
+        </div>
         <ProductGrid
           products={products}
           isLoading={isLoadingProducts}
@@ -101,8 +110,8 @@ export default function SellerProfilePage() {
         onClose={() => setActiveModal(null)}
         onSaved={(url) => updateSellerState({ banner: url })}
       />
-      <DescriptionModal
-        isOpen={activeModal === "description"}
+      <ProfileModal
+        isOpen={activeModal === "profile"}
         onClose={() => setActiveModal(null)}
         seller={seller}
         onSaved={(fields) => updateSellerState(fields)}
@@ -180,49 +189,86 @@ function AvatarBannerModal({ type, isOpen, onClose, onSaved }) {
   );
 }
 
-function DescriptionModal({ isOpen, onClose, seller, onSaved }) {
+// Only the fields the seller is allowed to self-update from this modal.
+// (cityId is deliberately excluded here — handle it via onOpenLocation/location flow.)
+const PROFILE_FIELDS = [
+  { name: "fullName", label: "Full name", type: "text" },
+  { name: "shopName", label: "Shop name", type: "text" },
+  { name: "shopCategory", label: "Shop category", type: "text" },
+  { name: "shopDescription", label: "Shop description", type: "textarea" },
+  { name: "phone", label: "Phone", type: "text" },
+  { name: "whatsappNumber", label: "WhatsApp number", type: "text" },
+  { name: "altPhone", label: "Alternate phone", type: "text" },
+  { name: "addressLine1", label: "Address line 1", type: "text" },
+  { name: "addressLine2", label: "Address line 2", type: "text" },
+  { name: "postalCode", label: "Postal code", type: "text" },
+];
+
+function ProfileModal({ isOpen, onClose, seller, onSaved }) {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const {
     register,
     handleSubmit,
+    reset,
     formState: { errors },
   } = useForm({
     resolver: zodResolver(sellerProfileUpdateSchema),
-    defaultValues: { shopDescription: seller?.shopDescription || "" },
+    defaultValues: getDefaults(seller),
   });
+
+  // Reset form values whenever the modal is (re)opened with fresh seller data.
+  useEffect(() => {
+    if (isOpen) reset(getDefaults(seller));
+  }, [isOpen, seller, reset]);
 
   const onSubmit = async (data) => {
     setIsSubmitting(true);
     try {
-      await sellerService.updateProfile(data);
-      toast.success("Description updated");
-      onSaved(data);
+      // Drop empty-string fields so optional validators aren't tripped
+      // and we don't overwrite existing values with blanks.
+      const payload = Object.fromEntries(
+        Object.entries(data).filter(([, v]) => v !== ""),
+      );
+      const res = await sellerService.updateProfile(payload);
+      const updated = res?.data?.data?.seller || payload;
+      toast.success("Profile updated");
+      onSaved(updated);
       onClose();
     } catch (err) {
-      toast.error(
-        err?.response?.data?.message || "Couldn't update description",
-      );
+      toast.error(err?.response?.data?.message || "Couldn't update profile");
     } finally {
       setIsSubmitting(false);
     }
   };
 
   return (
-    <Modal isOpen={isOpen} onClose={onClose} title="Edit description" size="sm">
-      <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-4">
-        <div>
-          <textarea
-            rows={4}
-            className="w-full rounded-md border border-border bg-surface-raised text-sm text-text p-3 focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary resize-none"
-            {...register("shopDescription")}
-          />
-          {errors.shopDescription && (
-            <p className="text-xs text-error mt-1">
-              {errors.shopDescription.message}
-            </p>
-          )}
-        </div>
-        <div className="flex justify-end gap-2">
+    <Modal isOpen={isOpen} onClose={onClose} title="Edit profile" size="md">
+      <form
+        onSubmit={handleSubmit(onSubmit)}
+        className="flex flex-col gap-4 max-h-[70vh] overflow-y-auto pr-1"
+      >
+        {PROFILE_FIELDS.map((field) => (
+          <div key={field.name}>
+            <label className="block text-xs font-medium text-text-muted mb-1">
+              {field.label}
+            </label>
+            {field.type === "textarea" ? (
+              <textarea
+                rows={3}
+                className="w-full rounded-md border border-border bg-surface-raised text-sm text-text p-3 focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary resize-none"
+                {...register(field.name)}
+              />
+            ) : (
+              <Input type="text" {...register(field.name)} />
+            )}
+            {errors[field.name] && (
+              <p className="text-xs text-error mt-1">
+                {errors[field.name].message}
+              </p>
+            )}
+          </div>
+        ))}
+        <div className="flex justify-end gap-2 pt-2 sticky bottom-0 bg-surface pb-1">
           <Button type="button" variant="secondary" onClick={onClose}>
             Cancel
           </Button>
@@ -233,4 +279,11 @@ function DescriptionModal({ isOpen, onClose, seller, onSaved }) {
       </form>
     </Modal>
   );
+}
+
+function getDefaults(seller) {
+  return PROFILE_FIELDS.reduce((acc, { name }) => {
+    acc[name] = seller?.[name] || "";
+    return acc;
+  }, {});
 }
