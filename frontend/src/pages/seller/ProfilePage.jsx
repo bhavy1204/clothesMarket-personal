@@ -15,6 +15,7 @@ import Pagination from "@/components/common/Pagination";
 import Modal from "@/components/common/Modal";
 import Input from "@/components/common/Input";
 import Button from "@/components/common/Button";
+import ImageCropModal from "@/components/common/ImageCropModal";
 
 export default function SellerProfilePage() {
   const navigate = useNavigate();
@@ -120,36 +121,37 @@ export default function SellerProfilePage() {
   );
 }
 
-function AvatarBannerModal({ type, isOpen, onClose, onSaved }) {
-  const [file, setFile] = useState(null);
+export default function AvatarBannerModal({ type, isOpen, onClose, onSaved }) {
+
+  const [pendingFile, setPendingFile] = useState(null); 
   const [isSubmitting, setIsSubmitting] = useState(false);
   const isAvatar = type === "avatar";
 
   const handleFileChange = (e) => {
     const selected = e.target.files?.[0];
+    e.target.value = ""; // allow re-selecting the same file later
     if (!selected) return;
     const errorMessage = validateImageFile(selected, 5);
     if (errorMessage) {
       toast.error(errorMessage);
-      e.target.value = "";
       return;
     }
-    setFile(selected);
+    setPendingFile(selected);
   };
 
-  const handleSave = async () => {
-    if (!file) return;
+  const handleCropConfirm = async (blob) => {
     setIsSubmitting(true);
     try {
       const formData = new FormData();
-      formData.append(type, file);
+      const filename = `${type}.jpg`;
+      formData.append(type, blob, filename);
       const res = isAvatar
         ? await sellerService.updateAvatar(formData)
         : await sellerService.updateBanner(formData);
       const url = res.data.data[type];
       toast.success(`${isAvatar ? "Avatar" : "Banner"} updated`);
       onSaved(url);
-      setFile(null);
+      setPendingFile(null);
       onClose();
     } catch (err) {
       toast.error(err?.response?.data?.message || "Couldn't update image");
@@ -159,33 +161,36 @@ function AvatarBannerModal({ type, isOpen, onClose, onSaved }) {
   };
 
   return (
-    <Modal
-      isOpen={isOpen}
-      onClose={onClose}
-      title={isAvatar ? "Update avatar" : "Update banner"}
-      size="sm"
-    >
-      <div className="flex flex-col gap-4">
-        <input
-          type="file"
-          accept="image/jpeg,image/png,image/webp"
-          onChange={handleFileChange}
-        />
-        <div className="flex justify-end gap-2">
-          <Button variant="secondary" onClick={onClose}>
-            Cancel
-          </Button>
-          <Button
-            variant="primary"
-            isLoading={isSubmitting}
-            disabled={!file}
-            onClick={handleSave}
-          >
-            Save
-          </Button>
+    <>
+      <Modal
+        isOpen={isOpen && !pendingFile}
+        onClose={onClose}
+        title={isAvatar ? "Update avatar" : "Update banner"}
+        size="sm"
+      >
+        <div className="flex flex-col gap-4">
+          <input
+            type="file"
+            accept="image/jpeg,image/png,image/webp"
+            onChange={handleFileChange}
+          />
+          <div className="flex justify-end gap-2">
+            <Button variant="secondary" onClick={onClose}>
+              Cancel
+            </Button>
+          </div>
         </div>
-      </div>
-    </Modal>
+      </Modal>
+
+      <ImageCropModal
+        isOpen={!!pendingFile}
+        file={pendingFile}
+        aspect={isAvatar ? 1 : 3 / 1}
+        shape={isAvatar ? "circle" : "rect"}
+        onClose={() => setPendingFile(null)}
+        onConfirm={handleCropConfirm}
+      />
+    </>
   );
 }
 
