@@ -14,6 +14,7 @@ import { siteContentService, productService } from "@/api/index";
 import ProductGrid from "@/components/product/ProductGrid";
 import Button from "@/components/common/Button";
 import useCityStore from "@/store/useCityStore";
+import useSiteContentStore from "@/store/useSiteContentStore";
 
 /**
  * HomePage — /
@@ -55,22 +56,30 @@ function BannerSlider() {
   const cityId = selectedCity?._id;
 
   useEffect(() => {
-    let isCancelled = false;
-    siteContentService
-      .getAllBanners()
-      .then((res) => {
-        if (isCancelled) return;
-        const payload = res.data?.banners ?? res.data?.data ?? res.data;
-        setBanners(Array.isArray(payload) ? payload : []);
-      })
-      .catch(() => {})
-      .finally(() => {
-        if (!isCancelled) setIsLoading(false);
-      });
-    return () => {
-      isCancelled = true;
-    };
-  },  [cityId]);
+  if (!cityId) return;
+
+  let isCancelled = false;
+  siteContentService
+    .getAllBanners()
+    .then((res) => {
+      if (isCancelled) return;
+
+      const payload =
+        res.data?.banners ??
+        res.data?.data ??
+        res.data;
+
+      setBanners(Array.isArray(payload) ? payload : []);
+    })
+    .catch(() => {})
+    .finally(() => {
+      if (!isCancelled) setIsLoading(false);
+    });
+
+  return () => {
+    isCancelled = true;
+  };
+}, [cityId]);
 
   const goTo = useCallback(
     (index) => {
@@ -252,6 +261,7 @@ function FeaturedProducts() {
 
 
   useEffect(() => {
+    if (!cityId) return;
     let isCancelled = false;
     productService
       .getAll({ sort: "newest", limit: 8, page: 1 })
@@ -297,32 +307,28 @@ function FeaturedProducts() {
 /* ── FAQ preview ──────────────────────────────────────────────────────── */
 
 function FAQPreview() {
-  const [faqs, setFaqs] = useState([]);
   const [openId, setOpenId] = useState(null);
 
-  useEffect(() => {
-    let isCancelled = false;
-    siteContentService
-      .getAllFAQs()
-      .then((res) => {
-        if (!isCancelled)
-          setFaqs(res.data.data.slice(0, 5));
-      })
-      .catch(() => {});
-    return () => {
-      isCancelled = true;
-    };
-  }, []);
+  const faqs = useSiteContentStore((state) => state.faqs);
+  const faqsLoading = useSiteContentStore((state) => state.faqsLoading);
+  const loadFAQs = useSiteContentStore((state) => state.loadFAQs);
 
-  if (faqs.length === 0) return null;
+  useEffect(() => {
+    loadFAQs().catch(() => {});
+  }, [loadFAQs]);
+
+  const previewFAQs = faqs.slice(0, 5);
+
+  if (faqsLoading || previewFAQs.length === 0) return null;
 
   return (
     <div className="flex flex-col gap-4 max-w-2xl">
       <h2 className="text-lg font-bold text-text">
         Frequently asked questions
       </h2>
+
       <div className="rounded-xl border border-border bg-surface-raised divide-y divide-border overflow-hidden">
-        {faqs.map((faq) => {
+        {previewFAQs.map((faq) => {
           const isOpen = openId === faq._id;
           return (
             <div key={faq._id}>

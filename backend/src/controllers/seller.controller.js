@@ -449,7 +449,7 @@ const getSellerPublicProfile = asyncHandler(async (req, res) => {
     const { slug } = req.params;
 
     const seller = await Seller.findOne({ slug, status: "approved" })
-        .select("fullName shopName shopDescription shopCategory avatar banner cityId whatsappNumber slug averageRating status phone createdAt googleMapLink")
+        .select("fullName shopName shopDescription shopCategory avatar banner cityId whatsappNumber slug averageRating status phone altPhone createdAt googleMapLink")
         .populate("cityId", "name state")
         .lean();
 
@@ -608,7 +608,7 @@ const getNearbySellers = asyncHandler(async (req, res) => {
     }
 
     const radiusInMeters = Math.min(
-        parseFloat(radius) * 1000 || 5000, // default 5km
+        parseFloat(radius) * 1000 || 2000, // default 2km
         10000                               // hard cap at 10km
     );
 

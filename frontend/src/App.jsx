@@ -91,7 +91,7 @@ export default function App() {
       </div>
     );
   }
-
+{console.log("APP MOUNTED")}
   return (
     <>
       <InstallBanner/>
