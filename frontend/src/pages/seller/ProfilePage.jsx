@@ -44,9 +44,8 @@ export default function SellerProfilePage() {
       .then((res) => {
         updateSellerState(res.data.data.seller);
       })
-      .catch(() => {})
+      .catch(() => { })
       .finally(() => setIsLoadingProducts(false));
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [page, limit]);
 
   useEffect(() => {
@@ -72,13 +71,13 @@ export default function SellerProfilePage() {
           <h2 className="text-sm font-semibold text-text-muted uppercase tracking-wide">
             Your products
           </h2>
-          <button
-            type="button"
+          <Button
+            type="primary"
             onClick={() => setActiveModal("profile")}
             className="text-sm font-medium text-primary hover:underline"
           >
             Edit profile
-          </button>
+          </Button>
         </div>
         <ProductGrid
           products={products}
@@ -121,9 +120,9 @@ export default function SellerProfilePage() {
   );
 }
 
-export default function AvatarBannerModal({ type, isOpen, onClose, onSaved }) {
+export function AvatarBannerModal({ type, isOpen, onClose, onSaved }) {
 
-  const [pendingFile, setPendingFile] = useState(null); 
+  const [pendingFile, setPendingFile] = useState(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const isAvatar = type === "avatar";
 
@@ -197,16 +196,10 @@ export default function AvatarBannerModal({ type, isOpen, onClose, onSaved }) {
 // Only the fields the seller is allowed to self-update from this modal.
 // (cityId is deliberately excluded here — handle it via onOpenLocation/location flow.)
 const PROFILE_FIELDS = [
-  { name: "fullName", label: "Full name", type: "text" },
-  { name: "shopName", label: "Shop name", type: "text" },
-  { name: "shopCategory", label: "Shop category", type: "text" },
   { name: "shopDescription", label: "Shop description", type: "textarea" },
   { name: "phone", label: "Phone", type: "text" },
   { name: "whatsappNumber", label: "WhatsApp number", type: "text" },
   { name: "altPhone", label: "Alternate phone", type: "text" },
-  { name: "addressLine1", label: "Address line 1", type: "text" },
-  { name: "addressLine2", label: "Address line 2", type: "text" },
-  { name: "postalCode", label: "Postal code", type: "text" },
 ];
 
 function ProfileModal({ isOpen, onClose, seller, onSaved }) {
@@ -273,6 +266,12 @@ function ProfileModal({ isOpen, onClose, seller, onSaved }) {
             )}
           </div>
         ))}
+        <div className="rounded-md border border-border bg-surface-raised px-3 py-2.5 text-sm text-text-secondary">
+          <span className="font-medium text-text">Note:</span>{" "}
+          You can update the information above. If you wish to change any
+          other profile details, please contact the ClothMarket team for
+          assistance.
+        </div>
         <div className="flex justify-end gap-2 pt-2 sticky bottom-0 bg-surface pb-1">
           <Button type="button" variant="secondary" onClick={onClose}>
             Cancel

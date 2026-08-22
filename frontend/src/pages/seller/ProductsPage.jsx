@@ -8,6 +8,8 @@ import {
   Trash,
   Package,
   Image as ImageIcon,
+  PencilIcon,
+  X,
 } from "@phosphor-icons/react";
 import toast from "react-hot-toast";
 import { productService } from "@/api/index";
@@ -27,6 +29,7 @@ import Loader from "@/components/common/Loader";
 import { VariantsField } from "@/components/product/VariantsField";
 import EmptyState from "@/components/common/EmptyState";
 import Pagination from "@/components/common/Pagination";
+import ImageCropModal from "@/components/common/ImagecropModal";
 
 import {
   DndContext,
@@ -46,7 +49,7 @@ import {
 
 import { CSS } from "@dnd-kit/utilities";
 
-function SortableImage({ image, onRemove }) {
+function SortableImage({ image, onRemove, onEdit }) {
   const { attributes, listeners, setNodeRef, transform, transition } =
     useSortable({ id: image.id });
 
@@ -69,6 +72,17 @@ function SortableImage({ image, onRemove }) {
         style={{ touchAction: "none" }}
         className="absolute inset-0 cursor-grab active:cursor-grabbing"
       />
+
+      <button
+        type="button"
+        onClick={(e) => {
+          e.stopPropagation();
+          onEdit(image);
+        }}
+        className="absolute top-2 left-2 z-10 h-7 w-7 rounded-full bg-black/60 text-white flex items-center justify-center opacity-100 sm:opacity-0 sm:group-hover:opacity-100 transition"
+      >
+        <PencilIcon size={14} />
+      </button>
 
       <button
         type="button"
@@ -287,6 +301,7 @@ function ProductFormModal({ isOpen, onClose, product, onSaved }) {
   const [imageFiles, setImageFiles] = useState([]);
   const [imagePreviews, setImagePreviews] = useState([]);
   const [images, setImages] = useState([]);
+  const [editingImage, setEditingImage] = useState(null);
 
   const defaultFormValues = {
     productName: "",
@@ -331,6 +346,22 @@ function ProductFormModal({ isOpen, onClose, product, onSaved }) {
       activationConstraint: { delay: 150, tolerance: 5 }, // small hold before drag starts, so normal taps/scroll still work
     }),
   );
+
+  const handleEditImage = (image) => {
+    setEditingImage(image);
+  };
+
+  const handleCropConfirm = (blob) => {
+  setImages((prev) =>
+    prev.map((img) => {
+      if (img.id !== editingImage.id) return img;
+      URL.revokeObjectURL(img.preview);
+      const editedFile = new File([blob], img.file.name, { type: blob.type });
+      return { ...img, file: editedFile, preview: URL.createObjectURL(blob) };
+    })
+  );
+  setEditingImage(null);
+};
 
   const handleImageChange = (e) => {
     const files = Array.from(e.target.files);
@@ -528,6 +559,7 @@ function ProductFormModal({ isOpen, onClose, product, onSaved }) {
                     key={image.id}
                     image={image}
                     onRemove={removeImage}
+                    onEdit={handleEditImage}
                   />
                 ))}
               </div>
@@ -544,6 +576,13 @@ function ProductFormModal({ isOpen, onClose, product, onSaved }) {
           </Button>
         </div>
       </form>
+      <ImageCropModal
+  isOpen={!!editingImage}
+  file={editingImage?.file}
+  aspect={1}
+  onClose={() => setEditingImage(null)}
+  onConfirm={handleCropConfirm}
+/>
     </Modal>
   );
 }

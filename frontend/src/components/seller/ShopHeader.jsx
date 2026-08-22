@@ -71,28 +71,31 @@ export default function ShopHeader({
 
       <div className="px-4 sm:px-6">
         <div className="relative -mt-5 sm:-mt-12 flex items-end gap-4">
-          <div className="relative h-32 w-32 sm:h-28 sm:w-28 lg:h-40 lg:w-40 rounded-full ring-4 ring-surface-raised overflow-hidden bg-surface shrink-0">
-            {avatar ? (
-              <img
-                src={avatar}
-                alt={shopName}
-                className="h-full w-full object-cover"
-              />
-            ) : (
-              <div className="h-full w-full flex items-center justify-center text-2xl lg:text-4xl text-text-muted">
-                {shopName?.[0]}
-              </div>
-            )}
+          <div className="relative h-32 w-32 sm:h-28 sm:w-28 lg:h-40 lg:w-40 rounded-full ring-4 ring-surface-raised bg-surface shrink-0">
+            <div className="h-full w-full rounded-full overflow-hidden">
+              {avatar ? (
+                <img
+                  src={avatar}
+                  alt={shopName}
+                  className="h-full w-full object-cover"
+                />
+              ) : (
+                <div className="h-full w-full flex items-center justify-center text-2xl lg:text-4xl text-text-muted">
+                  {shopName?.[0]}
+                </div>
+              )}
+            </div>
 
             {isOwner && (
               <EditButton
                 onClick={onEditAvatar}
-                className="absolute bottom-0 right-0"
+                className="absolute bottom-0 right-0 z-10"
                 label="Edit avatar"
                 small
               />
             )}
           </div>
+
 
           {subscriptionStatus && (
             <div className="mb-1.5 hidden sm:block">
@@ -120,7 +123,7 @@ export default function ShopHeader({
                   ? "Add a Shop Description so customers know what you sell."
                   : "")}
             </p>
-            {isOwner && (
+            {/* {isOwner && (
               <button
                 type="button"
                 onClick={onEditDescription}
@@ -129,7 +132,7 @@ export default function ShopHeader({
               >
                 <PencilSimple size={14} />
               </button>
-            )}
+            )} */}
           </div>
 
           <div className="mt-3 flex flex-wrap items-center gap-2">
@@ -194,6 +197,18 @@ export default function ShopHeader({
             >
               Call Seller
             </Button>
+
+            {seller.altPhone && (
+              <Button
+                variant="secondary"
+                leftIcon={<Phone size={18} />}
+                onClick={() => window.open(`tel:${seller.altPhone}`)}
+                className="flex-1 sm:flex-none"
+              >
+                Alternate number
+              </Button>
+            )}
+
           </div>
         </div>
       </div>
@@ -208,12 +223,31 @@ function EditButton({ onClick, className = "", label, small = false }) {
       onClick={onClick}
       aria-label={label}
       className={[
-        "flex items-center justify-center rounded-full bg-surface-raised/90 backdrop-blur text-text-secondary shadow-sm hover:text-primary",
-        small ? "h-6 w-6" : "h-8 w-8",
+        "group flex items-center justify-center gap-1.5",
+        "rounded-full",
+        "border border-white/60",
+        "bg-surface-raised/95 backdrop-blur-md",
+        "text-text-secondary",
+        "shadow-md",
+        "transition-all duration-200",
+        "hover:bg-surface hover:text-primary hover:shadow-lg",
+        "active:scale-95",
+        small ? "h-7 w-7" : "h-8 px-3",
         className,
       ].join(" ")}
     >
-      <PencilSimple size={small ? 12 : 14} />
+      <PencilSimple
+        size={small ? 13 : 14}
+        weight="bold"
+        className="transition-transform duration-200 group-hover:scale-110"
+      />
+
+      {!small && (
+        <span className="text-xs font-medium">
+          Edit
+        </span>
+      )}
     </button>
   );
 }
+

@@ -96,7 +96,7 @@ export default function ProductDetailPage() {
         setReviews(res.data.data.reviews);
         setTotalPages(res.data.data.pagination.totalPages);
       })
-      .catch(() => {})
+      .catch(() => { })
       .finally(() => setIsLoadingReviews(false));
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [product?._id, page, limit]);
@@ -132,7 +132,7 @@ export default function ProductDetailPage() {
     }
 
     const productLink = window.location.href;
-   
+
     const message = `Hi,
 
 I found this product on ClothesMarket and I'm interested in it.
@@ -144,7 +144,7 @@ I found this product on ClothesMarket and I'm interested in it.
 ${productLink}
 
 `;
-     
+
     window.open(
       buildWhatsAppLink(phone, message),
       "_blank",
@@ -177,7 +177,7 @@ ${productLink}
     price,
     discountedPrice,
     productDescription,
-    type,
+    productType,
     gender,
     variants,
   } = product;
@@ -215,12 +215,12 @@ ${productLink}
           )}
 
           {/* Main image */}
-          <div className="relative flex-1 overflow-hidden rounded-3xl border border-border bg-surface shadow-sm aspect-square">
+          <div className="relative flex-1 overflow-hidden rounded-3xl border border-border bg-surface-raised shadow-sm aspect-square">
             {images.length > 0 ? (
               <img
                 src={images[activeImage]}
                 alt={name}
-                className="h-full w-full object-cover transition-all duration-300"
+                className="h-full w-full  object-contain transition-all duration-300"
               />
             ) : (
               <div className="flex h-full items-center justify-center text-sm text-text-muted">
@@ -280,16 +280,33 @@ ${productLink}
               </p>
             )}
 
-            <div className="flex flex-wrap items-center gap-2 text-sm text-text-muted">
+            {/* Gender + Type — small tags */}
+            <div className="flex flex-wrap items-center gap-2 text-xs font-medium text-text-muted">
               {gender && (
-                <span className="rounded-full bg-surface px-3 py-1 border border-border">
+                <span className="rounded-full bg-surface px-3 py-1 border border-border capitalize">
                   {gender}
                 </span>
               )}
-              {type && (
+              {productType && (
                 <span className="rounded-full bg-surface px-3 py-1 border border-border">
-                  {formatProductType(type)}
+                  {formatProductType(productType)}
                 </span>
+              )}
+            </div>
+
+            {/* Color + Brand — key/value rows */}
+            <div className="space-y-1.5 text-sm">
+              {product.color && (
+                <div className="flex gap-2">
+                  <span className="text-text-muted w-14 shrink-0">Color</span>
+                  <span className="text-text font-medium">{product.color}</span>
+                </div>
+              )}
+              {product.brand && (
+                <div className="flex gap-2">
+                  <span className="text-text-muted w-14 shrink-0">Brand</span>
+                  <span className="text-text font-medium">{product.brand}</span>
+                </div>
               )}
             </div>
           </div>
@@ -334,9 +351,9 @@ ${productLink}
                     <div className="text-sm font-semibold text-text text-center">
                       {variant.size}
                     </div>
-                    <div className="mt-1 text-[11px] text-text-muted text-center">
+                    {/* <div className="mt-1 text-[11px] text-text-muted text-center">
                       {variant.quantity} available
-                    </div>
+                    </div> */}
                   </div>
                 ))}
               </div>

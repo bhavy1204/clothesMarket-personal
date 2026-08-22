@@ -1,7 +1,12 @@
 import { useRef, useState, useCallback, useEffect } from "react";
 import Modal from "@/components/common/Modal";
 import Button from "@/components/common/Button";
-import { RotateCcw, RotateCw, ZoomIn, ZoomOut } from "lucide-react";
+import {
+  ArrowCounterClockwise,
+  ArrowClockwise,
+  MagnifyingGlassPlus,
+  MagnifyingGlassMinus,
+} from "@phosphor-icons/react";
 
 /**
  * ImageCropModal
@@ -25,6 +30,7 @@ export default function ImageCropModal({
   onClose,
   onConfirm,
 }) {
+  console.log("crop modal isOpen:");
   const containerRef = useRef(null);
   const imgRef = useRef(null);
   const [imgSrc, setImgSrc] = useState(null);
@@ -36,7 +42,6 @@ export default function ImageCropModal({
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   const dragState = useRef(null);
-
   // Frame size shown on screen (CSS px). Keep it reasonably sized for mobile.
   const FRAME_W = 300;
   const FRAME_H = Math.round(FRAME_W / aspect);
@@ -178,7 +183,7 @@ export default function ImageCropModal({
             className="p-2 rounded-md border border-border hover:bg-surface-raised"
             aria-label="Rotate left"
           >
-            <RotateCcw size={18} />
+            <ArrowCounterClockwise size={18} />
           </button>
           <button
             type="button"
@@ -186,10 +191,10 @@ export default function ImageCropModal({
             className="p-2 rounded-md border border-border hover:bg-surface-raised"
             aria-label="Rotate right"
           >
-            <RotateCw size={18} />
+            <ArrowClockwise size={18} />
           </button>
           <div className="flex items-center gap-2 flex-1 max-w-45">
-            <ZoomOut size={16} className="text-text-muted shrink-0" />
+            <MagnifyingGlassMinus size={16} className="text-text-muted shrink-0" />
             <input
               type="range"
               min={1}
@@ -199,7 +204,7 @@ export default function ImageCropModal({
               onChange={(e) => setZoom(Number(e.target.value))}
               className="w-full accent-primary"
             />
-            <ZoomIn size={16} className="text-text-muted shrink-0" />
+            <MagnifyingGlassPlus size={16} className="text-text-muted shrink-0" />
           </div>
         </div>
 
