@@ -15,7 +15,7 @@ import Pagination from "@/components/common/Pagination";
 import Modal from "@/components/common/Modal";
 import Input from "@/components/common/Input";
 import Button from "@/components/common/Button";
-import ImageCropModal from "@/components/common/ImageCropModal";
+import ImageCropModal from "@/components/common/ImagecropModal.jsx";
 
 export default function SellerProfilePage() {
   const navigate = useNavigate();
