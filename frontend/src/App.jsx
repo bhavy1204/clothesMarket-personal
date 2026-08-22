@@ -37,6 +37,7 @@ import SellerProductsPage from "@/pages/seller/ProductsPage.jsx";
 import SellerProfilePage from "@/pages/seller/ProfilePage.jsx";
 import SellerSubscriptionPage from "@/pages/seller/SubscriptionPage.jsx";
 import ShopPage from "@/pages/seller/ShopPage.jsx";
+import QRCode from "@/pages/seller/QRCode.jsx";
 
 // Admin pages
 import AdminDashboardPage from "@/pages/admin/AdminDashboardPage.jsx";
@@ -157,6 +158,8 @@ export default function App() {
             <Route path="/seller/dashboard" element={<SellerDashboardPage />} />
             <Route path="/seller/products" element={<SellerProductsPage />} />
             <Route path="/seller/profile" element={<SellerProfilePage />} />
+            <Route path="/seller/qr-code" element={<QRCode />} />
+
             <Route
               path="/seller/subscription"
               element={<SellerSubscriptionPage />}

@@ -11,7 +11,7 @@ import { OTP } from "../models/otp.model.js";
 import { City } from "../models/city.model.js";
 import { uploadToB2, deleteFromB2 } from "../utils/B2.js";
 import sharp from "sharp";
-
+import QRCode from "qrcode"
 const googleClient = new OAuth2Client(process.env.GOOGLE_CLIENT_ID);
 
 // helpers
@@ -159,8 +159,8 @@ const registerSeller = asyncHandler(async (req, res) => {
 
     const now = new Date();
 
-    seller.subscription={
-        status:"trial",
+    seller.subscription = {
+        status: "trial",
         trialEndsAt: new Date(
             now.getTime() + 30 * 24 * 60 * 60 * 1000
         )
@@ -643,6 +643,48 @@ const getSellerSubscription = asyncHandler(async (req, res) => {
     );
 });
 
+const getSellerQrCode = asyncHandler(async (req, res) => {
+
+    const seller = await Seller.findById(req.user._id).select("qrCode slug");
+
+    if (!seller.slug) {
+        throw new APIError(404, "Seller Slug is required");
+    }
+
+    if (seller.qrCode) {
+        return res.status(200).json(
+            new APIResponse(
+                200,
+                { qrCode: seller.qrCode },
+                "QR fetched successfully"
+            )
+        );
+    }
+
+    const shopUrl = `${process.env.FRONTEND_URL}/shop/${seller.slug}`;
+
+    const qrBuffer = await QRCode.toBuffer(shopUrl);
+
+    const url = await uploadToB2(
+        qrBuffer,
+        `seller-qrcodes/${req.user._id}.png`,
+        "image/png"
+    );
+
+    seller.qrCode = url;
+
+    await seller.save();
+
+    return res.status(200).json(
+        new APIResponse(
+            200,
+            { qrCode: seller.qrCode },
+            "QR generated successfully"
+        )
+    );
+});
+
+
 export {
     registerSeller,
     loginSeller,
@@ -661,4 +703,5 @@ export {
     updateShopLocation,
     getNearbySellers,
     getSellerSubscription,
+    getSellerQrCode
 };

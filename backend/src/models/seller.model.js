@@ -38,6 +38,10 @@ const sellerSchema = new mongoose.Schema({
         enum: ['electronics', 'clothing', 'furniture', 'general'],
         default: 'clothing'
     },
+    qrCode: {
+        type: String,
+        default: null
+    },
     email: {
         type: String,
         required: true,
@@ -98,9 +102,9 @@ const sellerSchema = new mongoose.Schema({
             required: true
         }
     },
-    googleMapLink:{
-        type:String,
-        trim:true
+    googleMapLink: {
+        type: String,
+        trim: true
     },
     avatar: {
         type: String,
@@ -112,7 +116,7 @@ const sellerSchema = new mongoose.Schema({
         trim: true,
         default: process.env.DEFAULT_SELLER_BANNER_URL
     },
-    cityId:{
+    cityId: {
         type: mongoose.Schema.Types.ObjectId,
         ref: "City",
         required: [true, "City ID is required"],
@@ -207,7 +211,7 @@ sellerSchema.index({ location: "2dsphere" })
 
 sellerSchema.pre("save", async function (next) {
 
-    if ( this.isNew || this.isModified("shopName") ) {
+    if (this.isNew || this.isModified("shopName")) {
         let baseSlug = this.shopName
             .toLowerCase()
             .trim()

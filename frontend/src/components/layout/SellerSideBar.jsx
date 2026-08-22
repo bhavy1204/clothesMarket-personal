@@ -4,6 +4,7 @@ import {
   Package,
   Storefront,
   CreditCard,
+  ScanIcon
 } from "@phosphor-icons/react";
 
 // { to: "/seller/dashboard", label: "Dashboard", icon: SquaresFour, end: true },
@@ -11,6 +12,7 @@ const NAV_ITEMS = [
   { to: "/seller/products", label: "Products", icon: Package },
   { to: "/seller/profile", label: "My shop", icon: Storefront },
   { to: "/seller/subscription", label: "Subscription", icon: CreditCard },
+  { to: "/seller/qr-code", label: "QR Code", icon: ScanIcon },
 ];
 
 export default function SellerSidebar() {

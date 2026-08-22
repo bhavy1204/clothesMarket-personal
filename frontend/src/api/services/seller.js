@@ -54,6 +54,9 @@ const sellerService = {
   getSubscription: () =>
     api.get(`${BASE}/subscription`),
 
+  getQrCode: () => 
+    api.get(`${BASE}/qr-code`)
+  ,
 
   updateProfile: (data) =>
     api.patch(`${BASE}/profile`, data),

@@ -17,6 +17,7 @@ import {
     updateShopLocation,
     getNearbySellers,
     getSellerSubscription,
+    getSellerQrCode
 } from "../controllers/seller.controller.js";
 import { verifyJWT, verifySellerOnly } from "../middleware/auth.middleware.js";
 import {
@@ -59,6 +60,7 @@ router.patch("/change-password", changeSellerPassword);
 
 // seller dashboard & subscription
 router.get("/dashboard", getSellerDashboard);
+router.get("/qr-code", getSellerQrCode);
 router.get("/subscription", getSellerSubscription);
 
 // seller profile update
