@@ -161,9 +161,7 @@ const registerSeller = asyncHandler(async (req, res) => {
 
     seller.subscription = {
         status: "trial",
-        trialEndsAt: new Date(
-            now.getTime() + 30 * 24 * 60 * 60 * 1000
-        )
+        trialEndsAt: new Date("2026-11-30T23:59:59.999Z")
     }
 
     await seller.save({ validateBeforeSave: false });
