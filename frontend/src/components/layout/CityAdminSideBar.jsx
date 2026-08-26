@@ -1,5 +1,5 @@
 import { NavLink, useNavigate } from "react-router-dom";
-import { SquaresFour, Storefront, Users, SignOut } from "@phosphor-icons/react";
+import { SquaresFour, Storefront, Users, SignOut, PackageIcon , TruckIcon} from "@phosphor-icons/react";
 import toast from "react-hot-toast";
 import { staffLogout } from "@/lib/staffAuth";
 
@@ -12,6 +12,8 @@ const NAV_ITEMS = [
   },
   { to: "/city-admin/sellers", label: "Sellers", icon: Storefront },
   { to: "/city-admin/staff", label: "Staff", icon: Users },
+   { to: "/city-admin/orders", label: "Orders", icon: PackageIcon },
+    { to: "/city-admin/delivery", label: "Delivery", icon: TruckIcon },
 ];
 
 export default function CityAdminSidebar() {

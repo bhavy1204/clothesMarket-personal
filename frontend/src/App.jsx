@@ -14,6 +14,7 @@ import AdminLayout from "@/components/layout/AdminLayout.jsx";
 // Top-level pages
 import HomePage from "@/pages/HomePage.jsx";
 import NotFoundPage from "./pages/NotFoundPage.jsx";
+import ComingSoon from "./components/common/ComingSoon.jsx";
 
 // User pages
 import LoginPage from "@/pages/user/LoginPage.jsx";
@@ -179,6 +180,8 @@ export default function App() {
             <Route path="/admin/faqs" element={<AdminFAQsPage />} />
             <Route path="/admin/cities" element={<CityManagement />} />
             <Route path="/admin/staff" element={<StaffManagement />} />
+            <Route path="/admin/orders" element={<ComingSoon />} />
+            <Route path="/admin/delivery" element={<ComingSoon />} />
           </Route>
         </Route>
 
@@ -201,6 +204,8 @@ export default function App() {
               element={<CityAdminSellersPage />}
             />
             <Route path="/city-admin/staff" element={<CityAdminStaffPage />} />
+            <Route path="/city-admin/orders" element={<ComingSoon />} />
+            <Route path="/city-admin/delivery" element={<ComingSoon />} />
           </Route>
         </Route>
 
