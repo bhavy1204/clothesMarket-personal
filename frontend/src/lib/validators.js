@@ -169,6 +169,7 @@ export const createProductSchema = z.object({
     productName: z.string().trim().min(2, "Product name is required").max(120),
     productDescription: z.string().trim().min(10, "Description too short").max(2000),
     price: z.coerce.number().positive("Price must be greater than 0"),
+    showPrice:z.boolean(),
     discountedPrice: z.preprocess(
         (value) => (value === "" ? undefined : Number(value)),
         z.number().min(0).optional()

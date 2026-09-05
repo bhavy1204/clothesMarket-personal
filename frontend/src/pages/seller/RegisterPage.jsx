@@ -116,9 +116,9 @@ export default function SellerRegisterPage() {
         replace: true,
       });
     } catch (err) {
-      console.log(err);
-      console.log(err.response);
-      console.log(err.response?.data);
+      // console.log(err);
+      // console.log(err.response);
+      // console.log(err.response?.data);
 
       toast.error(
         err?.response?.data?.message ?? err?.message ?? "Unknown error",
@@ -152,8 +152,8 @@ export default function SellerRegisterPage() {
 
         <form
           onSubmit={handleSubmit(onSubmit, (errors) => {
-            console.log("FORM INVALID");
-            console.log(errors);
+            // console.log("FORM INVALID");
+            // console.log(errors);
 
             toast.error(JSON.stringify(errors, null, 2));
           })}

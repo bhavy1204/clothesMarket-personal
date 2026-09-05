@@ -313,23 +313,41 @@ ${productLink}
 
           {/* Price */}
           <div className="space-y-2">
-            <div className="flex flex-wrap items-end gap-3">
-              <span className="text-4xl font-bold text-text">
-                {formatPrice(hasDiscount ? discountedPrice : price)}
-              </span>
+            {product.showPrice ? (
+              <>
+                <div className="flex flex-wrap items-end gap-3">
+                  <span className="text-4xl font-bold text-text">
+                    {formatPrice(hasDiscount ? discountedPrice : price)}
+                  </span>
 
-              {hasDiscount && (
-                <>
-                  <span className="text-lg text-text-muted line-through">
-                    {formatPrice(price)}
-                  </span>
-                  <span className="rounded-full bg-primary/10 px-3 py-1 text-sm font-semibold text-primary">
-                    {formatDiscount(price, discountedPrice)}
-                  </span>
-                </>
-              )}
-            </div>
-            <p className="text-sm text-text-muted">Inclusive of all taxes</p>
+                  {hasDiscount && (
+                    <>
+                      <span className="text-lg text-text-muted line-through">
+                        {formatPrice(price)}
+                      </span>
+
+                      <span className="rounded-full bg-primary/10 px-3 py-1 text-sm font-semibold text-primary">
+                        {formatDiscount(price, discountedPrice)}
+                      </span>
+                    </>
+                  )}
+                </div>
+
+                <p className="text-sm text-text-muted">
+                  Inclusive of all taxes
+                </p>
+              </>
+            ) : (
+              <div className="space-y-2">
+                <span className="text-2xl font-bold text-text">
+                  Price on request
+                </span>
+
+                <p className="text-sm text-text-muted">
+                  Contact the seller for pricing details.
+                </p>
+              </div>
+            )}
           </div>
 
           {/* Sizes */}

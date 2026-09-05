@@ -129,7 +129,6 @@ export default function SellerProductsPage() {
         ),
       )
       .finally(() => setIsLoading(false));
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [page, limit]);
 
   useEffect(() => {
@@ -151,6 +150,20 @@ export default function SellerProductsPage() {
       await productService.toggleStatus(product._id);
       toast.success(
         product.isActive ? "Product hidden" : "Product is now live",
+      );
+      fetchProducts();
+    } catch (err) {
+      toast.error(
+        err?.response?.data?.message || "Couldn't update product status",
+      );
+    }
+  };
+
+  const handleToggleShowPrice = async (product) => {
+    try {
+      await productService.toggleShowPrice(product._id);
+      toast.success(
+        product.showPrice ? "Price hidden" : "Price is now live",
       );
       fetchProducts();
     } catch (err) {
@@ -249,6 +262,19 @@ export default function SellerProductsPage() {
                 {product.isActive ? "Live" : "Hidden"}
               </button>
 
+               <button
+                type="button"
+                onClick={() => handleToggleShowPrice(product)}
+                className={[
+                  "text-xs font-medium rounded-full px-2.5 py-1 border shrink-0",
+                  product.showPrice
+                    ? "bg-success-bg text-success border-success-border"
+                    : "bg-surface text-text-muted border-border",
+                ].join(" ")}
+              >
+                {product.showPrice ? "Price Live" : "Price Hidden"}
+              </button>
+
               <button
                 type="button"
                 onClick={() => openEditModal(product)}
@@ -311,6 +337,7 @@ function ProductFormModal({ isOpen, onClose, product, onSaved }) {
     gender: "",
     color: "",
     brand: "",
+    showPrice: true,
     productDescription: "",
     variants: [{ size: "", quantity: 0 }],
   };
@@ -352,16 +379,16 @@ function ProductFormModal({ isOpen, onClose, product, onSaved }) {
   };
 
   const handleCropConfirm = (blob) => {
-  setImages((prev) =>
-    prev.map((img) => {
-      if (img.id !== editingImage.id) return img;
-      URL.revokeObjectURL(img.preview);
-      const editedFile = new File([blob], img.file.name, { type: blob.type });
-      return { ...img, file: editedFile, preview: URL.createObjectURL(blob) };
-    })
-  );
-  setEditingImage(null);
-};
+    setImages((prev) =>
+      prev.map((img) => {
+        if (img.id !== editingImage.id) return img;
+        URL.revokeObjectURL(img.preview);
+        const editedFile = new File([blob], img.file.name, { type: blob.type });
+        return { ...img, file: editedFile, preview: URL.createObjectURL(blob) };
+      })
+    );
+    setEditingImage(null);
+  };
 
   const handleImageChange = (e) => {
     const files = Array.from(e.target.files);
@@ -429,16 +456,20 @@ function ProductFormModal({ isOpen, onClose, product, onSaved }) {
         images.forEach((image) => {
           formData.append("images", image.file);
         });
-
+        // console.log(data)
         await productService.create(formData);
         toast.success("Product added");
       }
 
       onSaved();
     } catch (err) {
-      console.log(err);
-      console.log(err.response);
-      toast.error(err?.response?.data?.message || "Couldn't save this product");
+      // console.log(err);
+      // console.log(err.response);
+      toast.error(
+        err?.response?.data?.errors?.[0]?.msg ||
+        err?.response?.data?.message ||
+        "Couldn't save this product"
+      );
     } finally {
       setIsSubmitting(false);
     }
@@ -472,6 +503,13 @@ function ProductFormModal({ isOpen, onClose, product, onSaved }) {
             {...register("discountedPrice")}
           />
         </div>
+        <label className="flex items-center gap-2 mt-3 cursor-pointer">
+          <input
+            type="checkbox"
+            {...register("showPrice")}
+          />
+          <span>Show price to customers</span>
+        </label>
 
         <div className="grid grid-cols-2 gap-3">
           <Select
@@ -577,12 +615,12 @@ function ProductFormModal({ isOpen, onClose, product, onSaved }) {
         </div>
       </form>
       <ImageCropModal
-  isOpen={!!editingImage}
-  file={editingImage?.file}
-  aspect={1}
-  onClose={() => setEditingImage(null)}
-  onConfirm={handleCropConfirm}
-/>
+        isOpen={!!editingImage}
+        file={editingImage?.file}
+        aspect={1}
+        onClose={() => setEditingImage(null)}
+        onConfirm={handleCropConfirm}
+      />
     </Modal>
   );
 }

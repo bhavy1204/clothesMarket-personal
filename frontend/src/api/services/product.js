@@ -46,6 +46,9 @@ const productService = {
     toggleStatus: (productId) =>
         api.patch(`${BASE}/${productId}/toggle`),
 
+    toggleShowPrice: (productId) =>
+        api.patch(`${BASE}/${productId}/toggle/price`),
+
     delete: (productId) =>
         api.delete(`${BASE}/${productId}`),
 };

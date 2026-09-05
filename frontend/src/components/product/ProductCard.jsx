@@ -14,7 +14,7 @@ export default function ProductCard({
   onToggleWishlist,
   isWishlisted = false,
 }) {
-  const { slug, productName, images, price, discountedPrice, averageRating } =
+  const { slug, productName, images, price, discountedPrice, averageRating, showPrice } =
     product;
 
   const hasDiscount = Boolean(discountedPrice) && discountedPrice < price;
@@ -73,18 +73,27 @@ export default function ProductCard({
 
           <div className="flex items-center justify-between gap-2">
             <div className="flex items-baseline gap-1.5 min-w-0">
-              <span
-                className={
-                  hasDiscount
-                    ? "text-sm sm:text-base font-semibold text-white bg-success rounded-md px-1.5 py-0.5"
-                    : "text-sm sm:text-base font-semibold text-text"
-                }
-              >
-                {formatPrice(hasDiscount ? discountedPrice : price)}
-              </span>
-              {hasDiscount && (
-                <span className="text-xs text-text-muted line-through truncate">
-                  {formatPrice(price)}
+              {showPrice ? (
+                <>
+                  <span
+                    className={
+                      hasDiscount
+                        ? "text-sm sm:text-base font-semibold text-white bg-success rounded-md px-1.5 py-0.5"
+                        : "text-sm sm:text-base font-semibold text-text"
+                    }
+                  >
+                    {formatPrice(hasDiscount ? discountedPrice : price)}
+                  </span>
+
+                  {hasDiscount && (
+                    <span className="text-xs text-text-muted line-through truncate">
+                      {formatPrice(price)}
+                    </span>
+                  )}
+                </>
+              ) : (
+                <span className="text-sm sm:text-base font-semibold text-text-muted">
+                  Price on request
                 </span>
               )}
             </div>

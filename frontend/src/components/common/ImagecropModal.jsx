@@ -30,7 +30,7 @@ export default function ImageCropModal({
   onClose,
   onConfirm,
 }) {
-  console.log("crop modal isOpen:");
+  // console.log("crop modal isOpen:");
   const containerRef = useRef(null);
   const imgRef = useRef(null);
   const [imgSrc, setImgSrc] = useState(null);
