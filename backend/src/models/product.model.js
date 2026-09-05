@@ -45,6 +45,11 @@ const productSchema = new mongoose.Schema(
             min: [0, "Price cannot be negative"],
         },
 
+        showPrice:{
+            type:Boolean,
+            default:true
+        },
+
         discountedPrice: {
             type: Number,
             default: 0,

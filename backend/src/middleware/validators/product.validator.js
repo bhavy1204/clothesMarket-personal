@@ -24,6 +24,10 @@ export const validateCreateProduct = [
         .notEmpty().withMessage("Price is required")
         .isFloat({ min: 0 }).withMessage("Price must be a non-negative number"),
 
+    body("showPrice")
+        .notEmpty().withMessage("show price must be defined")
+        .isBoolean().withMessage("Show price must be a boolean value"),
+
     body("discountedPrice")
         .optional()
         .isFloat({ min: 0 }).withMessage("Discounted price must be a non-negative number")

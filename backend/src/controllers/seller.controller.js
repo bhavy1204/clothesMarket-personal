@@ -455,7 +455,7 @@ const getSellerPublicProfile = asyncHandler(async (req, res) => {
         throw new APIError(404, "Shop not found");
 
     const products = await Product.find({ sellerId: seller._id, isActive: true })
-        .select("productName slug price discountedPrice images averageRating numReviews")
+        .select("productName slug showPrice price discountedPrice images averageRating numReviews")
         .sort({ createdAt: -1 })
         .lean();
 

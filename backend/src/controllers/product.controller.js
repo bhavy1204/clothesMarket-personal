@@ -64,7 +64,7 @@ const refreshSubscriptionStatus = async (seller) => {
     }
 };
 
-const hasSellerAccess = (seller)=>{
+const hasSellerAccess = (seller) => {
     if (seller.subscription.status === "active") {
         return true;
     }
@@ -114,7 +114,7 @@ const createProduct = asyncHandler(async (req, res) => {
 
     const {
         productName, productDescription, price, discountedPrice,
-        gender, productType, color, brand, variants
+        gender, productType, color, brand, variants, showPrice
     } = req.body;
 
     console.log(req.body);
@@ -122,10 +122,11 @@ const createProduct = asyncHandler(async (req, res) => {
     // create with placeholder slug first to get _id
     const product = await Product.create({
         sellerId: req.user._id,
-        cityId:req.user.cityId,
+        cityId: req.user.cityId,
         productName,
         productDescription,
         price,
+        showPrice,
         discountedPrice: discountedPrice || 0,
         images: imageUrls,
         gender,
@@ -229,6 +230,32 @@ const toggleProductStatus = asyncHandler(async (req, res) => {
     );
 });
 
+// ─── TOGGLE PRODUCT SHOW PRICE ────────────────────────────────────────────────────
+
+const toggleProductShowPrice = asyncHandler(async (req, res) => {
+    const { productId } = req.params;
+
+    const product = await Product.findById(productId).select("sellerId showPrice");
+
+    if (!product)
+        throw new APIError(404, "Product not found");
+
+    if (product.sellerId.toString() !== req.user._id.toString()) {
+        throw new APIError(403, "You can only update your own products");
+    }
+
+    product.showPrice = !product.showPrice;
+    await product.save({ validateBeforeSave: false });
+
+    return res.status(200).json(
+        new APIResponse(200,
+            { showPrice: product.showPrice },
+            `Product ${product.showPrice ? "visible" : "deactivated"} successfully`
+        )
+    );
+});
+
+
 // ─── GET PRODUCT BY ID (public) ───────────────────────────────────────────────
 
 const getProductById = asyncHandler(async (req, res) => {
@@ -239,6 +266,11 @@ const getProductById = asyncHandler(async (req, res) => {
         .lean();
 
     if (!product) throw new APIError(404, "Product not found");
+
+    if (!product.showPrice) {
+        delete product.price;
+        delete product.discountedPrice;
+    }
 
     return res.status(200).json(
         new APIResponse(200, product, "Product fetched successfully")
@@ -252,13 +284,17 @@ const getProductBySlug = asyncHandler(async (req, res) => {
 
     const { slug } = req.params;
 
-    const product = await Product.findOne({ slug, isActive: true,cityId })
+    const product = await Product.findOne({ slug, isActive: true, cityId })
         .populate("sellerId", "shopName slug cityId whatsappNumber avatar")
-        .populate("cityId","name")
+        .populate("cityId", "name")
         .lean();
 
     if (!product) throw new APIError(404, "Product not found");
 
+    if (!product.showPrice) {
+        delete product.price;
+        delete product.discountedPrice;
+    }
     return res.status(200).json(
         new APIResponse(200, product, "Product fetched successfully")
     );
@@ -277,7 +313,7 @@ const getSellerProducts = asyncHandler(async (req, res) => {
 
     const [products, total] = await Promise.all([
         Product.find({ sellerId, isActive: true })
-            .select("productName slug price discountedPrice images averageRating numReviews productType gender")
+            .select("productName slug showPrice price discountedPrice images averageRating numReviews productType gender")
             .sort({ createdAt: -1 })
             .skip(skip)
             .limit(limit)
@@ -303,7 +339,7 @@ const getMyProducts = asyncHandler(async (req, res) => {
     // seller sees all products including inactive
     const [products, total] = await Promise.all([
         Product.find({ sellerId: req.user._id })
-            .select("productName productDescription slug price discountedPrice images isActive averageRating numReviews productType gender color brand variants createdAt")
+            .select("productName productDescription slug showPrice price discountedPrice images isActive averageRating numReviews productType gender color brand variants createdAt")
             .sort({ createdAt: -1 })
             .skip(skip)
             .limit(limit)
@@ -322,25 +358,32 @@ const getMyProducts = asyncHandler(async (req, res) => {
 // ─── GET ALL PRODUCTS (public listing with filters) ───────────────────────────
 
 const getAllProducts = asyncHandler(async (req, res) => {
-    const cityId= req.cityId;
+    const cityId = req.cityId;
     const page = Math.max(1, parseInt(req.query.page) || 1);
     const limit = Math.min(50, Math.max(1, parseInt(req.query.limit) || 12));
     const skip = (page - 1) * limit;
 
-    const filters = buildProductFilters(req.query,cityId);
+    const filters = buildProductFilters(req.query, cityId);
     const sort = buildSortOption(req.query.sort);
 
     const [products, total] = await Promise.all([
         Product.find(filters)
-            .select("productName slug price discountedPrice images averageRating numReviews productType gender color brand sellerId")
+            .select("productName slug showPrice price discountedPrice images averageRating numReviews productType gender color brand sellerId")
             .populate("sellerId", "shopName cityId")
-            .populate("cityId","name")
+            .populate("cityId", "name")
             .sort(sort)
             .skip(skip)
             .limit(limit)
             .lean(),
         Product.countDocuments(filters),
     ]);
+
+    products.forEach((product) => {
+        if (!product.showPrice) {
+            delete product.price;
+            delete product.discountedPrice;
+        }
+    });
 
     return res.status(200).json(
         new APIResponse(200, {
@@ -369,7 +412,7 @@ const getProductsByCategory = asyncHandler(async (req, res) => {
         throw new APIError(400, "Invalid product category");
     }
 
-    const filters = { isActive: true,  cityId, productType, };
+    const filters = { isActive: true, cityId, productType, };
     const sort = buildSortOption(req.query.sort);
 
     const [products, total] = await Promise.all([
@@ -461,7 +504,7 @@ const searchProducts = asyncHandler(async (req, res) => {
         Product.find(searchFilter)
             .select("productName slug price discountedPrice images averageRating numReviews productType gender brand sellerId")
             .populate("sellerId", "shopName cityId")
-            .populate("cityId","name")
+            .populate("cityId", "name")
             .sort({ createdAt: -1 })
             .skip(skip)
             .limit(limit)
@@ -483,6 +526,7 @@ export {
     updateProduct,
     deleteProduct,
     toggleProductStatus,
+    toggleProductShowPrice,
     getProductById,
     getProductBySlug,
     getSellerProducts,

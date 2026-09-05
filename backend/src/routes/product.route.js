@@ -4,6 +4,7 @@ import {
     updateProduct,
     deleteProduct,
     toggleProductStatus,
+    toggleProductShowPrice,
     getProductById,
     getProductBySlug,
     getSellerProducts,
@@ -41,6 +42,7 @@ router.use(verifyJWT, verifySellerOnly);
 router.get("/my/products", validatePaginationQuery, getMyProducts);
 router.post("/", uploadProductImages,parseVariants, validateCreateProduct, createProduct);
 router.patch("/:productId", validateObjectId("productId"), validateUpdateProduct, updateProduct);
+router.patch("/:productId/toggle/price", validateObjectId("productId"), toggleProductShowPrice);
 router.patch("/:productId/toggle", validateObjectId("productId"), toggleProductStatus);
 router.delete("/:productId", validateObjectId("productId"), deleteProduct);
 
