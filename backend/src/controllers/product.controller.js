@@ -417,13 +417,20 @@ const getProductsByCategory = asyncHandler(async (req, res) => {
 
     const [products, total] = await Promise.all([
         Product.find(filters)
-            .select("productName slug price discountedPrice images averageRating numReviews gender color brand")
+            .select("productName slug showPrice price discountedPrice images averageRating numReviews gender color brand")
             .sort(sort)
             .skip(skip)
             .limit(limit)
             .lean(),
         Product.countDocuments(filters),
     ]);
+
+    products.forEach((product) => {
+        if (!product.showPrice) {
+            delete product.price;
+            delete product.discountedPrice;
+        }
+    });
 
     return res.status(200).json(
         new APIResponse(200, {
@@ -450,13 +457,20 @@ const getProductsByGender = asyncHandler(async (req, res) => {
 
     const [products, total] = await Promise.all([
         Product.find({ isActive: true, gender })
-            .select("productName slug price discountedPrice images averageRating numReviews productType color brand")
+            .select("productName slug showPrice price discountedPrice images averageRating numReviews productType color brand")
             .sort(sort)
             .skip(skip)
             .limit(limit)
             .lean(),
         Product.countDocuments({ isActive: true, gender }),
     ]);
+
+    products.forEach((product) => {
+        if (!product.showPrice) {
+            delete product.price;
+            delete product.discountedPrice;
+        }
+    });
 
     return res.status(200).json(
         new APIResponse(200, {
@@ -502,7 +516,7 @@ const searchProducts = asyncHandler(async (req, res) => {
 
     const [products, total] = await Promise.all([
         Product.find(searchFilter)
-            .select("productName slug price discountedPrice images averageRating numReviews productType gender brand sellerId")
+            .select("productName slug showPrice price discountedPrice images averageRating numReviews productType gender brand sellerId")
             .populate("sellerId", "shopName cityId")
             .populate("cityId", "name")
             .sort({ createdAt: -1 })
@@ -511,6 +525,13 @@ const searchProducts = asyncHandler(async (req, res) => {
             .lean(),
         Product.countDocuments(searchFilter),
     ]);
+
+    products.forEach((product)=>{
+        if(!product.showPrice){
+            delete product.price;
+            delete product.discountedPrice
+        }
+    })
 
     return res.status(200).json(
         new APIResponse(200, {
